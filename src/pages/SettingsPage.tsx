@@ -9,6 +9,7 @@ import {
   Repeat,
   Shapes,
   Smartphone,
+  Sparkles,
   Sun,
   Trash2,
   Upload,
@@ -170,6 +171,13 @@ export default function SettingsPage() {
             <p className="text-[15px] font-medium">Biometric &amp; PIN Lock</p>
             <p className="text-xs text-muted-foreground">Coming soon</p>
           </div>
+        </Card>
+      </section>
+
+      <section className="px-5">
+        <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">About</h2>
+        <Card className="divide-y divide-border">
+          <SettingsRow to="/welcome" icon={Sparkles} label="Welcome Screen" />
         </Card>
       </section>
 

@@ -60,8 +60,9 @@ export default function App() {
           <Route path="settings" element={<SettingsPage />} />
           <Route path="settings/categories" element={<CategoriesPage />} />
           <Route path="settings/recurring" element={<RecurringPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
+        <Route path="welcome" element={<OnboardingPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Toaster />
       <PwaUpdatePrompt />

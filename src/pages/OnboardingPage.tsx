@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { BarChart3, ShieldCheck, Sparkles, WifiOff } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { ArrowLeft, BarChart3, ShieldCheck, Sparkles, WifiOff } from 'lucide-react'
 import { Logo } from '@/components/layout/Logo'
 import { Button } from '@/components/ui/Button'
+import { useSettings } from '@/hooks/useSettings'
 import { updateSettings } from '@/services/settingsService'
 import { seedDemoData } from '@/db/seed'
 
@@ -12,7 +14,10 @@ const FEATURES = [
 ]
 
 export default function OnboardingPage() {
+  const { settings } = useSettings()
+  const navigate = useNavigate()
   const [loading, setLoading] = useState<'empty' | 'demo' | null>(null)
+  const isRevisit = settings?.hasOnboarded === true
 
   async function start(withDemoData: boolean) {
     setLoading(withDemoData ? 'demo' : 'empty')
@@ -21,13 +26,25 @@ export default function OnboardingPage() {
         await seedDemoData()
       }
       await updateSettings({ hasOnboarded: true })
+      navigate('/', { replace: true })
     } finally {
       setLoading(null)
     }
   }
 
   return (
-    <div className="flex min-h-dvh flex-col justify-between bg-background px-6 pb-8 pt-14 safe-top safe-bottom">
+    <div className="relative flex min-h-dvh flex-col justify-between bg-background px-6 pb-8 pt-14 safe-top safe-bottom">
+      {isRevisit && (
+        <button
+          type="button"
+          onClick={() => navigate('/settings')}
+          aria-label="Back to Settings"
+          className="absolute left-4 top-4 rounded-full p-2 text-muted-foreground hover:bg-secondary safe-top"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+      )}
+
       <div className="mx-auto flex w-full max-w-sm flex-col items-center text-center">
         <Logo size="lg" />
         <h1 className="mt-5 text-3xl font-bold tracking-tight">Spendly</h1>
@@ -43,6 +60,13 @@ export default function OnboardingPage() {
             </div>
           ))}
         </div>
+
+        {isRevisit && (
+          <p className="mt-6 text-xs text-muted-foreground">
+            You've already set up Spendly. Choosing demo data here adds sample transactions, budgets, and goals
+            on top of what you already have.
+          </p>
+        )}
       </div>
 
       <div className="mx-auto flex w-full max-w-sm flex-col gap-3">
@@ -51,7 +75,7 @@ export default function OnboardingPage() {
           {loading === 'demo' ? 'Setting up…' : 'Explore with demo data'}
         </Button>
         <Button size="lg" variant="outline" onClick={() => start(false)} disabled={loading !== null}>
-          {loading === 'empty' ? 'Setting up…' : 'Start with empty data'}
+          {isRevisit ? (loading === 'empty' ? 'Closing…' : 'Continue') : loading === 'empty' ? 'Setting up…' : 'Start with empty data'}
         </Button>
       </div>
     </div>
