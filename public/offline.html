@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0f5be0" />
+    <title>Spendly — Offline</title>
+    <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+        background: #0f5be0;
+        color: #f8fafc;
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      .wrap {
+        display: flex;
+        min-height: 100dvh;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 24px;
+        gap: 16px;
+      }
+      .mark {
+        width: 64px;
+        height: 64px;
+        border-radius: 20px;
+        background: #f8fafc;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 6px;
+        padding: 12px;
+        box-sizing: border-box;
+      }
+      .bar { width: 10px; background: #0f5be0; border-radius: 3px; }
+      .bar:nth-child(1) { height: 40%; }
+      .bar:nth-child(2) { height: 65%; }
+      .bar:nth-child(3) { height: 90%; }
+      h1 { font-size: 20px; margin: 0; }
+      p { margin: 0; color: #cbd5e1; font-size: 14px; max-width: 280px; }
+      button {
+        margin-top: 8px;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-size: 15px;
+        font-weight: 600;
+        background: #f8fafc;
+        color: #0f5be0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="mark"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+      <h1>You're offline</h1>
+      <p>Spendly needs to load at least once with an internet connection before it can work fully offline.</p>
+      <button onclick="location.reload()">Try again</button>
+    </div>
+  </body>
+</html>

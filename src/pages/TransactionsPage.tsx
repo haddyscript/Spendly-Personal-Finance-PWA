@@ -1,0 +1,104 @@
+import { useMemo, useState } from 'react'
+import { ListFilter, Receipt, Search, X } from 'lucide-react'
+import { PageHeader } from '@/components/layout/PageHeader'
+import { Skeleton } from '@/components/ui/Skeleton'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { Button } from '@/components/ui/Button'
+import { TransactionList } from '@/components/transactions/TransactionList'
+import { TransactionFilterSheet } from '@/components/transactions/TransactionFilterSheet'
+import { TransactionFormSheet } from '@/components/transactions/TransactionFormSheet'
+import { useFilteredTransactions } from '@/hooks/useTransactions'
+import type { TransactionFilters } from '@/hooks/useTransactions'
+import type { Transaction } from '@/types/models'
+import { useOutletContext } from 'react-router-dom'
+import type { AppShellContext } from '@/components/layout/AppShell'
+
+export default function TransactionsPage() {
+  const [filters, setFilters] = useState<TransactionFilters>({ sort: 'newest' })
+  const [search, setSearch] = useState('')
+  const [filterOpen, setFilterOpen] = useState(false)
+  const [editing, setEditing] = useState<Transaction | null>(null)
+  const { openAddTransaction } = useOutletContext<AppShellContext>()
+
+  const activeFilterCount = useMemo(
+    () => Object.entries(filters).filter(([k, v]) => k !== 'sort' && v).length,
+    [filters],
+  )
+
+  const { transactions, isLoading } = useFilteredTransactions({ ...filters, search })
+  const hasAnyFilter = activeFilterCount > 0 || search.length > 0
+
+  return (
+    <div className="flex flex-col gap-4 pb-6 pt-6 safe-top">
+      <PageHeader title="Transactions" />
+
+      <div className="flex items-center gap-2 px-5">
+        <div className="relative flex-1">
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="search"
+            placeholder="Search transactions"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-12 w-full rounded-xl border border-input bg-transparent pl-10 pr-4 text-[15px] outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label="Search transactions"
+          />
+        </div>
+        <button
+          type="button"
+          onClick={() => setFilterOpen(true)}
+          aria-label="Filter transactions"
+          className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-input"
+        >
+          <ListFilter className="h-5 w-5" />
+          {activeFilterCount > 0 && (
+            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
+      </div>
+
+      <div className="px-5">
+        {isLoading ? (
+          <div className="flex flex-col gap-2">
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-16 w-full" />
+            ))}
+          </div>
+        ) : transactions.length === 0 ? (
+          hasAnyFilter ? (
+            <EmptyState
+              icon={Search}
+              title="No matching transactions"
+              description="Try adjusting your search or filters."
+              action={
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSearch('')
+                    setFilters({ sort: 'newest' })
+                  }}
+                >
+                  <X className="h-4 w-4" /> Clear filters
+                </Button>
+              }
+            />
+          ) : (
+            <EmptyState
+              icon={Receipt}
+              title="No transactions yet"
+              description="Start tracking your spending by adding your first transaction."
+              action={<Button onClick={openAddTransaction}>Add Transaction</Button>}
+            />
+          )
+        ) : (
+          <TransactionList transactions={transactions} onSelect={setEditing} />
+        )}
+      </div>
+
+      <TransactionFilterSheet open={filterOpen} onClose={() => setFilterOpen(false)} filters={filters} onChange={setFilters} />
+      <TransactionFormSheet open={editing !== null} onClose={() => setEditing(null)} transaction={editing ?? undefined} />
+    </div>
+  )
+}
