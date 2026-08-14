@@ -23,6 +23,7 @@ import { useSettings } from '@/hooks/useSettings'
 import { useToast } from '@/hooks/useToast'
 import { updateSettings } from '@/services/settingsService'
 import { clearAllData, downloadExport, exportAllData, importData } from '@/services/exportImportService'
+import { seedDemoData } from '@/db/seed'
 import { CURRENCIES } from '@/types/models'
 import type { ThemeMode, CurrencyCode } from '@/types/models'
 
@@ -78,6 +79,11 @@ export default function SettingsPage() {
     await clearAllData()
     setClearConfirmOpen(false)
     success('All data cleared')
+  }
+
+  async function handleLoadDemoData() {
+    await seedDemoData()
+    success('Demo data loaded', 'Sample transactions, budgets, and goals have been added.')
   }
 
   return (
@@ -152,6 +158,11 @@ export default function SettingsPage() {
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
           <input ref={fileInputRef} type="file" accept="application/json" className="hidden" onChange={handleFileSelected} />
+          <button type="button" onClick={handleLoadDemoData} className="flex w-full items-center gap-3 p-4 text-left">
+            <Sparkles className="h-5 w-5 text-muted-foreground" />
+            <span className="flex-1 text-[15px] font-medium">Load Demo Data</span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
           <button
             type="button"
             onClick={() => setClearConfirmOpen(true)}
