@@ -16,7 +16,11 @@ export interface TransactionFilterSheetProps {
 const PAYMENT_METHOD_LABELS: Record<string, string> = {
   cash: 'Cash',
   gcash: 'GCash',
-  bank: 'Bank',
+  gotyme: 'GoTyme',
+  maribank: 'Maribank',
+  unionbank: 'Union Bank',
+  securitybank: 'Security Bank',
+  metrobank: 'Metro Bank',
   credit_card: 'Credit Card',
   other: 'Other',
 }

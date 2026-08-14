@@ -3,7 +3,7 @@ import { createId } from '@/utils/id'
 import { toDateKey, toMonthKey, lastNMonthKeys } from '@/utils/date'
 import type { PaymentMethod, Transaction } from '@/types/models'
 
-const PAYMENT_METHODS: PaymentMethod[] = ['cash', 'gcash', 'bank', 'credit_card']
+const PAYMENT_METHODS: PaymentMethod[] = ['cash', 'gcash', 'unionbank', 'securitybank', 'credit_card']
 
 function randomOf<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]
@@ -67,7 +67,7 @@ function generateDemoTransactions(): Transaction[] {
           categoryId: 'cat-salary',
           description: 'Salary',
           date,
-          paymentMethod: 'bank',
+          paymentMethod: 'unionbank',
         }),
       )
     }
@@ -175,7 +175,7 @@ export async function seedDemoData(): Promise<void> {
       amountMinor: 1500_00,
       categoryId: 'cat-bills',
       description: 'Internet',
-      paymentMethod: 'bank',
+      paymentMethod: 'unionbank',
       frequency: 'monthly',
       startDate: nextMonthDate,
       nextOccurrence: nextMonthDate,

@@ -7,7 +7,17 @@ export type TransactionType = (typeof TRANSACTION_TYPES)[number]
  */
 export const FUTURE_TRANSACTION_TYPES = ['transfer', 'refund'] as const
 
-export const PAYMENT_METHODS = ['cash', 'gcash', 'bank', 'credit_card', 'other'] as const
+export const PAYMENT_METHODS = [
+  'cash',
+  'gcash',
+  'gotyme',
+  'maribank',
+  'unionbank',
+  'securitybank',
+  'metrobank',
+  'credit_card',
+  'other',
+] as const
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number]
 
 export const RECURRING_FREQUENCIES = ['daily', 'weekly', 'monthly', 'yearly'] as const
