@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { ChevronLeft, Pencil, Plus, Trash2 } from 'lucide-react'
+import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { PageHeader } from '@/components/layout/PageHeader'
+import { BackButton } from '@/components/layout/BackButton'
 import { Button } from '@/components/ui/Button'
 import { CategoryIcon } from '@/components/categories/CategoryIcon'
 import { CategoryFormSheet } from '@/components/categories/CategoryFormSheet'
@@ -51,11 +51,7 @@ export default function CategoriesPage() {
     <div className="flex flex-col gap-4 pb-6 pt-6 safe-top">
       <PageHeader
         title="Categories"
-        action={
-          <Link to="/settings" aria-label="Back to settings" className="rounded-full p-2 hover:bg-secondary">
-            <ChevronLeft className="h-5 w-5" />
-          </Link>
-        }
+        action={<BackButton to="/settings" label="Back to settings" />}
       />
 
       <div className="px-5">

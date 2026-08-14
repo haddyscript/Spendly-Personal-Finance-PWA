@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { ChevronLeft, Plus, Repeat } from 'lucide-react'
+import { Plus, Repeat } from 'lucide-react'
 import { PageHeader } from '@/components/layout/PageHeader'
+import { BackButton } from '@/components/layout/BackButton'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { CategoryIcon } from '@/components/categories/CategoryIcon'
@@ -31,11 +31,7 @@ export default function RecurringPage() {
     <div className="flex flex-col gap-4 pb-6 pt-6 safe-top">
       <PageHeader
         title="Recurring"
-        action={
-          <Link to="/settings" aria-label="Back to settings" className="rounded-full p-2 hover:bg-secondary">
-            <ChevronLeft className="h-5 w-5" />
-          </Link>
-        }
+        action={<BackButton to="/settings" label="Back to settings" />}
       />
 
       <div className="flex flex-col gap-2 px-5">
