@@ -13,9 +13,20 @@ export function toMonthKey(date: Date = new Date()): string {
   return `${y}-${m}`
 }
 
-export function monthKeyToLabel(monthKey: string): string {
+export function monthKeyToDate(monthKey: string): Date {
   const [y, m] = monthKey.split('-').map(Number)
-  return new Date(y, m - 1, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  return new Date(y, m - 1, 1)
+}
+
+export function monthKeyToLabel(monthKey: string): string {
+  return monthKeyToDate(monthKey).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+}
+
+/** Shifts a "YYYY-MM" key forward/backward by `delta` months. */
+export function shiftMonthKey(monthKey: string, delta: number): string {
+  const date = monthKeyToDate(monthKey)
+  date.setMonth(date.getMonth() + delta)
+  return toMonthKey(date)
 }
 
 export function isSameDay(a: string, b: string): boolean {

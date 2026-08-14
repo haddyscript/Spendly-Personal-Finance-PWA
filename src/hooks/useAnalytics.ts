@@ -1,6 +1,6 @@
 import type { TransactionType } from '@/types/models'
 import { useTransactions } from '@/hooks/useTransactions'
-import { toMonthKey, lastNMonthKeys } from '@/utils/date'
+import { toMonthKey, lastNMonthKeys, monthKeyToDate } from '@/utils/date'
 import {
   calculateBalance,
   calculateCategoryTotals,
@@ -34,9 +34,9 @@ export function useCategoryBreakdown(month: string = toMonthKey(), type: Transac
   return { totals, total, isLoading }
 }
 
-export function useMonthlySeries(monthsCount = 6) {
+export function useMonthlySeries(monthsCount = 6, anchorMonth: string = toMonthKey()) {
   const { transactions, isLoading } = useTransactions()
-  const monthKeys = lastNMonthKeys(monthsCount)
+  const monthKeys = lastNMonthKeys(monthsCount, monthKeyToDate(anchorMonth))
   const series = calculateMonthlyTotals(transactions, monthKeys)
   return { series, isLoading }
 }

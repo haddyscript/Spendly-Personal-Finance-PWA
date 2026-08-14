@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight, Plus, Wallet } from 'lucide-react'
+import { Plus, Wallet } from 'lucide-react'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent } from '@/components/ui/Card'
+import { MonthSwitcher } from '@/components/common/MonthSwitcher'
 import { CategoryIcon } from '@/components/categories/CategoryIcon'
 import { CategoryPicker } from '@/components/categories/CategoryPicker'
 import { BudgetFormSheet } from '@/components/budgets/BudgetFormSheet'
@@ -15,13 +16,7 @@ import { useCategoryMap } from '@/hooks/useCategories'
 import { useSettings } from '@/hooks/useSettings'
 import { calculateBudgetProgress } from '@/utils/calculations'
 import { formatCurrency } from '@/utils/money'
-import { monthKeyToLabel, toMonthKey } from '@/utils/date'
-
-function shiftMonth(month: string, delta: number): string {
-  const [y, m] = month.split('-').map(Number)
-  const d = new Date(y, m - 1 + delta, 1)
-  return toMonthKey(d)
-}
+import { monthKeyToLabel, shiftMonthKey, toMonthKey } from '@/utils/date'
 
 export default function BudgetsPage() {
   const [month, setMonth] = useState(toMonthKey())
@@ -44,14 +39,10 @@ export default function BudgetsPage() {
       <PageHeader
         title="Budgets"
         action={
-          <div className="flex items-center gap-1">
-            <button aria-label="Previous month" onClick={() => setMonth((m) => shiftMonth(m, -1))} className="rounded-full p-2 hover:bg-secondary">
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <button aria-label="Next month" onClick={() => setMonth((m) => shiftMonth(m, 1))} className="rounded-full p-2 hover:bg-secondary">
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </div>
+          <MonthSwitcher
+            onPrevious={() => setMonth((m) => shiftMonthKey(m, -1))}
+            onNext={() => setMonth((m) => shiftMonthKey(m, 1))}
+          />
         }
         subtitle={monthKeyToLabel(month)}
       />

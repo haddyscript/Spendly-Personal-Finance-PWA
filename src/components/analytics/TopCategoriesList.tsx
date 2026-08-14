@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+import { ChevronRight } from 'lucide-react'
 import { CategoryIcon } from '@/components/categories/CategoryIcon'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import { useCategoryMap } from '@/hooks/useCategories'
@@ -17,7 +19,11 @@ export function TopCategoriesList({ items }: { items: TopCategory[] }) {
         const category = categoryMap.get(item.categoryId)
         if (!category) return null
         return (
-          <div key={item.categoryId} className="flex items-center gap-3">
+          <Link
+            key={item.categoryId}
+            to={`/transactions?category=${item.categoryId}`}
+            className="flex items-center gap-3 rounded-xl p-1.5 transition-colors active:bg-secondary hover:bg-secondary/60"
+          >
             <CategoryIcon icon={category.icon} color={category.color} size="sm" />
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between text-sm">
@@ -26,7 +32,8 @@ export function TopCategoriesList({ items }: { items: TopCategory[] }) {
               </div>
               <ProgressBar percentage={calculatePercentage(item.totalMinor, max)} className="mt-1.5 h-1.5" />
             </div>
-          </div>
+            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          </Link>
         )
       })}
     </div>

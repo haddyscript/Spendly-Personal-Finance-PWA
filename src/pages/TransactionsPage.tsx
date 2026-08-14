@@ -9,16 +9,30 @@ import { TransactionFilterSheet } from '@/components/transactions/TransactionFil
 import { TransactionFormSheet } from '@/components/transactions/TransactionFormSheet'
 import { useFilteredTransactions } from '@/hooks/useTransactions'
 import type { TransactionFilters } from '@/hooks/useTransactions'
+import { useCategoryMap } from '@/hooks/useCategories'
 import type { Transaction } from '@/types/models'
-import { useOutletContext } from 'react-router-dom'
+import { useOutletContext, useSearchParams } from 'react-router-dom'
 import type { AppShellContext } from '@/components/layout/AppShell'
 
 export default function TransactionsPage() {
-  const [filters, setFilters] = useState<TransactionFilters>({ sort: 'newest' })
+  const [searchParams, setSearchParams] = useSearchParams()
+  const initialCategoryId = searchParams.get('category') ?? undefined
+  const [filters, setFilters] = useState<TransactionFilters>({ sort: 'newest', categoryId: initialCategoryId })
   const [search, setSearch] = useState('')
   const [filterOpen, setFilterOpen] = useState(false)
   const [editing, setEditing] = useState<Transaction | null>(null)
   const { openAddTransaction } = useOutletContext<AppShellContext>()
+  const { categoryMap } = useCategoryMap()
+
+  const filterChipCategory = filters.categoryId ? categoryMap.get(filters.categoryId) : undefined
+
+  function clearCategoryFilter() {
+    setFilters((f) => ({ ...f, categoryId: undefined }))
+    setSearchParams((params) => {
+      params.delete('category')
+      return params
+    })
+  }
 
   const activeFilterCount = useMemo(
     () => Object.entries(filters).filter(([k, v]) => k !== 'sort' && v).length,
@@ -58,6 +72,19 @@ export default function TransactionsPage() {
           )}
         </button>
       </div>
+
+      {filterChipCategory && (
+        <div className="px-5">
+          <button
+            type="button"
+            onClick={clearCategoryFilter}
+            className="inline-flex items-center gap-2 rounded-full bg-accent px-3 py-1.5 text-xs font-medium text-accent-foreground transition-colors active:bg-accent/70"
+          >
+            {filterChipCategory.name}
+            <X className="h-3.5 w-3.5" aria-hidden="true" />
+          </button>
+        </div>
+      )}
 
       <div className="px-5">
         {isLoading ? (

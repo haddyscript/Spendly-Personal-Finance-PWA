@@ -3,20 +3,24 @@ import { PieChart } from 'lucide-react'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { Skeleton } from '@/components/ui/Skeleton'
+import { MonthSwitcher } from '@/components/common/MonthSwitcher'
+import { AnalyticsHeroCard } from '@/components/analytics/AnalyticsHeroCard'
 import { CategoryDonutChart } from '@/components/analytics/CategoryDonutChart'
 import { MonthlyBarChart } from '@/components/analytics/MonthlyBarChart'
-import { SpendingTrendCard } from '@/components/analytics/SpendingTrendCard'
 import { TopCategoriesList } from '@/components/analytics/TopCategoriesList'
-import { useCategoryBreakdown, useMonthlySeries, useSpendingTrend, useTopCategories } from '@/hooks/useAnalytics'
+import { useCategoryBreakdown, useMonthlySeries, useMonthSummary, useSpendingTrend, useTopCategories } from '@/hooks/useAnalytics'
 import { useCategoryMap } from '@/hooks/useCategories'
-import { toMonthKey } from '@/utils/date'
+import { shiftMonthKey, toMonthKey } from '@/utils/date'
 import type { TransactionType } from '@/types/models'
 
 export default function AnalyticsPage() {
+  const [month, setMonth] = useState(toMonthKey())
   const [type, setType] = useState<TransactionType>('expense')
-  const month = toMonthKey()
+
+  const { expense } = useMonthSummary(month)
   const { totals, total, isLoading: breakdownLoading } = useCategoryBreakdown(month, type)
-  const { series, isLoading: seriesLoading } = useMonthlySeries(6)
+  const { series, isLoading: seriesLoading } = useMonthlySeries(6, month)
   const { trend } = useSpendingTrend(month)
   const { topCategories } = useTopCategories(month, type, 5)
   const { categoryMap } = useCategoryMap()
@@ -29,12 +33,24 @@ export default function AnalyticsPage() {
     .filter((s): s is NonNullable<typeof s> => s !== null)
     .sort((a, b) => b.totalMinor - a.totalMinor)
 
+  const isCurrentMonth = month === toMonthKey()
+
   return (
     <div className="flex flex-col gap-5 pb-6 pt-6 safe-top">
-      <PageHeader title="Analytics" subtitle="Understand your spending patterns" />
+      <PageHeader
+        title="Analytics"
+        subtitle="Understand your spending patterns"
+        action={
+          <MonthSwitcher
+            onPrevious={() => setMonth((m) => shiftMonthKey(m, -1))}
+            onNext={() => setMonth((m) => shiftMonthKey(m, 1))}
+            nextDisabled={isCurrentMonth}
+          />
+        }
+      />
 
       <div className="px-5">
-        <SpendingTrendCard trend={trend} />
+        <AnalyticsHeroCard month={month} expenseMinor={expense} trend={trend} />
       </div>
 
       <div className="px-5">
@@ -57,7 +73,9 @@ export default function AnalyticsPage() {
             </div>
           </CardHeader>
           <CardContent>
-            {!breakdownLoading && slices.length === 0 ? (
+            {breakdownLoading ? (
+              <Skeleton className="mx-auto h-56 w-56 rounded-full" />
+            ) : slices.length === 0 ? (
               <EmptyState icon={PieChart} title="No data yet" description="Add transactions to see your breakdown." />
             ) : (
               <CategoryDonutChart data={slices} totalMinor={total} />
@@ -71,7 +89,13 @@ export default function AnalyticsPage() {
           <CardHeader className="pb-2">
             <CardTitle>Monthly Spending</CardTitle>
           </CardHeader>
-          <CardContent>{!seriesLoading && <MonthlyBarChart data={series} />}</CardContent>
+          <CardContent>
+            {seriesLoading ? (
+              <Skeleton className="h-52 w-full" />
+            ) : (
+              <MonthlyBarChart data={series} selectedMonth={month} onMonthClick={setMonth} />
+            )}
+          </CardContent>
         </Card>
       </div>
 
