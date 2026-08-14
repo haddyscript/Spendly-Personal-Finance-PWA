@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { Link } from 'react-router-dom'
 import {
+  CheckCircle2,
   ChevronRight,
   Download,
   Fingerprint,
@@ -21,6 +22,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Logo } from '@/components/layout/Logo'
 import { useSettings } from '@/hooks/useSettings'
 import { useToast } from '@/hooks/useToast'
+import { useInstallPrompt } from '@/hooks/useInstallPrompt'
 import { updateSettings } from '@/services/settingsService'
 import { clearAllData, downloadExport, exportAllData, importData } from '@/services/exportImportService'
 import { seedDemoData } from '@/db/seed'
@@ -35,7 +37,8 @@ const THEME_OPTIONS: { value: ThemeMode; label: string; icon: typeof Sun }[] = [
 
 export default function SettingsPage() {
   const { settings } = useSettings()
-  const { success, error } = useToast()
+  const { success, error, toast } = useToast()
+  const { installed, canPromptAndroid, isIosSafari, promptInstall } = useInstallPrompt()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [clearConfirmOpen, setClearConfirmOpen] = useState(false)
   const [pendingImport, setPendingImport] = useState<unknown>(null)
@@ -84,6 +87,14 @@ export default function SettingsPage() {
   async function handleLoadDemoData() {
     await seedDemoData()
     success('Demo data loaded', 'Sample transactions, budgets, and goals have been added.')
+  }
+
+  async function handleInstallClick() {
+    if (canPromptAndroid) {
+      await promptInstall()
+    } else if (isIosSafari) {
+      toast({ title: 'Install Spendly', description: 'Tap the Share icon, then "Add to Home Screen".' })
+    }
   }
 
   return (
@@ -188,6 +199,26 @@ export default function SettingsPage() {
       <section className="px-5">
         <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">About</h2>
         <Card className="divide-y divide-border">
+          {installed ? (
+            <div className="flex items-center gap-3 p-4">
+              <CheckCircle2 className="h-5 w-5 text-success" />
+              <span className="flex-1 text-[15px] font-medium">Spendly is installed</span>
+            </div>
+          ) : canPromptAndroid || isIosSafari ? (
+            <button type="button" onClick={handleInstallClick} className="flex w-full items-center gap-3 p-4 text-left">
+              <Download className="h-5 w-5 text-muted-foreground" />
+              <span className="flex-1 text-[15px] font-medium">Install App</span>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </button>
+          ) : (
+            <div className="flex items-center gap-3 p-4">
+              <Download className="h-5 w-5 text-muted-foreground" />
+              <div className="flex-1">
+                <p className="text-[15px] font-medium">Install App</p>
+                <p className="text-xs text-muted-foreground">Available in Chrome, Edge, or Safari on iPhone</p>
+              </div>
+            </div>
+          )}
           <SettingsRow to="/welcome" icon={Sparkles} label="Welcome Screen" />
         </Card>
       </section>
