@@ -17,16 +17,18 @@ import {
 } from 'lucide-react'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { Card } from '@/components/ui/Card'
-import { Select } from '@/components/ui/Select'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Logo } from '@/components/layout/Logo'
+import { DataOverviewCard } from '@/components/settings/DataOverviewCard'
+import { CurrencyPickerSheet } from '@/components/settings/CurrencyPickerSheet'
 import { useSettings } from '@/hooks/useSettings'
 import { useToast } from '@/hooks/useToast'
 import { useInstallPrompt } from '@/hooks/useInstallPrompt'
 import { updateSettings } from '@/services/settingsService'
 import { clearAllData, downloadExport, exportAllData, importData } from '@/services/exportImportService'
 import { seedDemoData } from '@/db/seed'
-import { CURRENCIES } from '@/types/models'
+import { CURRENCY_INFO } from '@/lib/currency'
+import { cn } from '@/lib/cn'
 import type { ThemeMode, CurrencyCode } from '@/types/models'
 
 const THEME_OPTIONS: { value: ThemeMode; label: string; icon: typeof Sun }[] = [
@@ -35,6 +37,8 @@ const THEME_OPTIONS: { value: ThemeMode; label: string; icon: typeof Sun }[] = [
   { value: 'dark', label: 'Dark', icon: Moon },
 ]
 
+const ROW_CLASS = 'flex w-full items-center gap-3 p-4 text-left transition-colors active:bg-secondary hover:bg-secondary/60'
+
 export default function SettingsPage() {
   const { settings } = useSettings()
   const { success, error, toast } = useToast()
@@ -42,6 +46,7 @@ export default function SettingsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [clearConfirmOpen, setClearConfirmOpen] = useState(false)
   const [pendingImport, setPendingImport] = useState<unknown>(null)
+  const [currencySheetOpen, setCurrencySheetOpen] = useState(false)
 
   async function handleExport() {
     const data = await exportAllData()
@@ -99,6 +104,15 @@ export default function SettingsPage() {
     }
   }
 
+  function handleSecurityClick() {
+    toast({
+      title: 'Biometric & PIN lock — coming soon',
+      description: "For now, your phone's own screen lock keeps Spendly private.",
+    })
+  }
+
+  const currency = settings?.currency ?? 'PHP'
+
   return (
     <div className="flex flex-col gap-6 pb-6 pt-6 safe-top">
       <PageHeader title="Settings" />
@@ -112,6 +126,11 @@ export default function SettingsPage() {
       </div>
 
       <section className="px-5">
+        <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Your Data</h2>
+        <DataOverviewCard />
+      </section>
+
+      <section className="px-5">
         <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Appearance</h2>
         <Card>
           <div className="grid grid-cols-3 gap-2 p-2">
@@ -120,9 +139,10 @@ export default function SettingsPage() {
                 key={value}
                 type="button"
                 onClick={() => updateSettings({ theme: value })}
-                className={`flex flex-col items-center gap-1.5 rounded-xl py-3 text-xs font-medium transition-colors ${
-                  settings?.theme === value ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:bg-secondary'
-                }`}
+                className={cn(
+                  'flex flex-col items-center gap-1.5 rounded-xl py-3 text-xs font-medium transition-all active:scale-95',
+                  settings?.theme === value ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:bg-secondary',
+                )}
               >
                 <Icon className="h-5 w-5" />
                 {label}
@@ -134,24 +154,23 @@ export default function SettingsPage() {
 
       <section className="px-5">
         <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Currency</h2>
-        <Card className="p-3">
-          <Select
-            aria-label="Currency"
-            value={settings?.currency ?? 'PHP'}
-            onChange={(e) => updateSettings({ currency: e.target.value as CurrencyCode })}
-          >
-            {CURRENCIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </Select>
+        <Card>
+          <button type="button" onClick={() => setCurrencySheetOpen(true)} className={cn(ROW_CLASS, 'rounded-2xl')}>
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-base font-semibold">
+              {CURRENCY_INFO[currency].symbol}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-[15px] font-medium">{CURRENCY_INFO[currency].name}</p>
+              <p className="text-xs text-muted-foreground">{currency}</p>
+            </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
         </Card>
       </section>
 
       <section className="px-5">
         <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Organize</h2>
-        <Card className="divide-y divide-border">
+        <Card className="divide-y divide-border overflow-hidden">
           <SettingsRow to="/settings/categories" icon={Shapes} label="Categories" />
           <SettingsRow to="/settings/recurring" icon={Repeat} label="Recurring Transactions" />
         </Card>
@@ -159,55 +178,66 @@ export default function SettingsPage() {
 
       <section className="px-5">
         <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Data</h2>
-        <Card className="divide-y divide-border">
-          <button type="button" onClick={handleExport} className="flex w-full items-center gap-3 p-4 text-left">
+        <Card className="divide-y divide-border overflow-hidden">
+          <button type="button" onClick={handleExport} className={ROW_CLASS}>
             <Download className="h-5 w-5 text-muted-foreground" />
             <span className="flex-1 text-[15px] font-medium">Export Data</span>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
-          <button type="button" onClick={handleImportClick} className="flex w-full items-center gap-3 p-4 text-left">
+          <button type="button" onClick={handleImportClick} className={ROW_CLASS}>
             <Upload className="h-5 w-5 text-muted-foreground" />
             <span className="flex-1 text-[15px] font-medium">Import Data</span>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
           <input ref={fileInputRef} type="file" accept="application/json" className="hidden" onChange={handleFileSelected} />
-          <button type="button" onClick={handleLoadDemoData} className="flex w-full items-center gap-3 p-4 text-left">
+          <button type="button" onClick={handleLoadDemoData} className={ROW_CLASS}>
             <Sparkles className="h-5 w-5 text-muted-foreground" />
             <span className="flex-1 text-[15px] font-medium">Load Demo Data</span>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
+        </Card>
+      </section>
+
+      <section className="px-5">
+        <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-destructive">Danger Zone</h2>
+        <Card className="border-destructive/30 bg-destructive/5">
           <button
             type="button"
             onClick={() => setClearConfirmOpen(true)}
-            className="flex w-full items-center gap-3 p-4 text-left text-destructive"
+            className={cn(ROW_CLASS, 'rounded-2xl text-destructive active:bg-destructive/10 hover:bg-destructive/10')}
           >
             <Trash2 className="h-5 w-5" />
-            <span className="flex-1 text-[15px] font-medium">Clear All Data</span>
+            <div className="flex-1">
+              <p className="text-[15px] font-medium">Clear All Data</p>
+              <p className="text-xs text-destructive/70">Permanently erase everything on this device</p>
+            </div>
           </button>
         </Card>
       </section>
 
       <section className="px-5">
         <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Security</h2>
-        <Card className="flex items-center gap-3 p-4">
-          <Fingerprint className="h-5 w-5 text-muted-foreground" />
-          <div className="flex-1">
-            <p className="text-[15px] font-medium">Biometric &amp; PIN Lock</p>
-            <p className="text-xs text-muted-foreground">Coming soon</p>
-          </div>
+        <Card>
+          <button type="button" onClick={handleSecurityClick} className={cn(ROW_CLASS, 'rounded-2xl')}>
+            <Fingerprint className="h-5 w-5 text-muted-foreground" />
+            <div className="flex-1">
+              <p className="text-[15px] font-medium">Biometric &amp; PIN Lock</p>
+              <p className="text-xs text-muted-foreground">Coming soon</p>
+            </div>
+          </button>
         </Card>
       </section>
 
       <section className="px-5">
         <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">About</h2>
-        <Card className="divide-y divide-border">
+        <Card className="divide-y divide-border overflow-hidden">
           {installed ? (
             <div className="flex items-center gap-3 p-4">
               <CheckCircle2 className="h-5 w-5 text-success" />
               <span className="flex-1 text-[15px] font-medium">Spendly is installed</span>
             </div>
           ) : canPromptAndroid || isIosSafari ? (
-            <button type="button" onClick={handleInstallClick} className="flex w-full items-center gap-3 p-4 text-left">
+            <button type="button" onClick={handleInstallClick} className={ROW_CLASS}>
               <Download className="h-5 w-5 text-muted-foreground" />
               <span className="flex-1 text-[15px] font-medium">Install App</span>
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
@@ -228,6 +258,13 @@ export default function SettingsPage() {
       <p className="px-5 text-center text-xs text-muted-foreground">
         All data stays on this device. Spendly sends nothing to the internet.
       </p>
+
+      <CurrencyPickerSheet
+        open={currencySheetOpen}
+        onClose={() => setCurrencySheetOpen(false)}
+        value={currency}
+        onSelect={(c: CurrencyCode) => updateSettings({ currency: c })}
+      />
 
       <ConfirmDialog
         open={clearConfirmOpen}
@@ -254,7 +291,7 @@ export default function SettingsPage() {
 
 function SettingsRow({ to, icon: Icon, label }: { to: string; icon: typeof Shapes; label: string }) {
   return (
-    <Link to={to} className="flex items-center gap-3 p-4">
+    <Link to={to} className={ROW_CLASS}>
       <Icon className="h-5 w-5 text-muted-foreground" />
       <span className="flex-1 text-[15px] font-medium">{label}</span>
       <ChevronRight className="h-4 w-4 text-muted-foreground" />
