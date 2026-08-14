@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { OfflineBanner } from '@/components/pwa/OfflineBanner'
-import { FAB } from '@/components/common/FAB'
 import { TransactionFormSheet } from '@/components/transactions/TransactionFormSheet'
 
 export interface AppShellContext {
@@ -19,8 +18,7 @@ export function AppShell() {
       <main className="flex-1 pb-28">
         <Outlet context={context} />
       </main>
-      <FAB onClick={() => setAddOpen(true)} />
-      <BottomNav />
+      <BottomNav onAddClick={() => setAddOpen(true)} />
       <TransactionFormSheet open={addOpen} onClose={() => setAddOpen(false)} />
     </div>
   )
