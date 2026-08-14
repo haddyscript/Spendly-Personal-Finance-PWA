@@ -89,7 +89,7 @@ export function BottomNav({ onAddClick }: { onAddClick: () => void }) {
             type="button"
             onClick={onAddClick}
             aria-label="Add transaction"
-            className="absolute -top-6 flex h-16 w-16 -translate-x-1/2 items-center justify-center rounded-full bg-gradient-to-b from-violet-500 to-violet-700 text-white shadow-[0_8px_24px_rgba(139,92,246,0.55)] transition-transform active:scale-95"
+            className="absolute -top-6 flex h-16 w-16 -translate-x-1/2 items-center justify-center rounded-full bg-gradient-to-b from-violet-500 to-violet-700 text-white shadow-[0_0_24px_rgba(139,92,246,0.55)] transition-transform active:scale-95"
             style={{ left: `${NOTCH_CENTER_PERCENT}%` }}
           >
             <Plus className="h-7 w-7" aria-hidden="true" />
