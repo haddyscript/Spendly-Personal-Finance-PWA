@@ -79,9 +79,11 @@ export default function SettingsPage() {
   }
 
   async function handleClearAll() {
+    const backup = await exportAllData()
+    downloadExport(backup)
     await clearAllData()
     setClearConfirmOpen(false)
-    success('All data cleared')
+    success('All data cleared', 'A backup was downloaded first, just in case.')
   }
 
   async function handleLoadDemoData() {
@@ -230,7 +232,7 @@ export default function SettingsPage() {
       <ConfirmDialog
         open={clearConfirmOpen}
         title="Delete all Spendly data?"
-        description="This cannot be undone unless you have an exported backup."
+        description="A backup file will download automatically before anything is deleted, so you can re-import it later if needed."
         confirmLabel="Delete Everything"
         destructive
         onConfirm={handleClearAll}
