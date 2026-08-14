@@ -3,8 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, BarChart3, ShieldCheck, Sparkles, WifiOff } from 'lucide-react'
 import { Logo } from '@/components/layout/Logo'
 import { Button } from '@/components/ui/Button'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useSettings } from '@/hooks/useSettings'
+import { useToast } from '@/hooks/useToast'
 import { updateSettings } from '@/services/settingsService'
+import { clearAllData } from '@/services/exportImportService'
 import { seedDemoData } from '@/db/seed'
 
 const FEATURES = [
@@ -15,17 +18,39 @@ const FEATURES = [
 
 export default function OnboardingPage() {
   const { settings } = useSettings()
+  const { success } = useToast()
   const navigate = useNavigate()
   const [loading, setLoading] = useState<'empty' | 'demo' | null>(null)
+  const [confirmClearOpen, setConfirmClearOpen] = useState(false)
   const isRevisit = settings?.hasOnboarded === true
 
-  async function start(withDemoData: boolean) {
-    setLoading(withDemoData ? 'demo' : 'empty')
+  async function startFresh() {
+    setLoading('demo')
     try {
-      if (withDemoData) {
-        await seedDemoData()
-      }
+      await seedDemoData()
       await updateSettings({ hasOnboarded: true })
+      navigate('/', { replace: true })
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  async function startEmpty() {
+    setLoading('empty')
+    try {
+      await updateSettings({ hasOnboarded: true })
+      navigate('/', { replace: true })
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  async function handleClearAndRestart() {
+    setLoading('empty')
+    try {
+      await clearAllData()
+      setConfirmClearOpen(false)
+      success('All data cleared', 'Starting fresh with empty data.')
       navigate('/', { replace: true })
     } finally {
       setLoading(null)
@@ -63,21 +88,37 @@ export default function OnboardingPage() {
 
         {isRevisit && (
           <p className="mt-6 text-xs text-muted-foreground">
-            You've already set up Spendly. Choosing demo data here adds sample transactions, budgets, and goals
-            on top of what you already have.
+            You've already set up Spendly. Demo data adds sample transactions, budgets, and goals on top of what
+            you already have. Empty data clears everything and starts fresh — that can't be undone unless you have
+            an exported backup.
           </p>
         )}
       </div>
 
       <div className="mx-auto flex w-full max-w-sm flex-col gap-3">
-        <Button size="lg" onClick={() => start(true)} disabled={loading !== null}>
+        <Button size="lg" onClick={startFresh} disabled={loading !== null}>
           <Sparkles className="h-4 w-4" />
           {loading === 'demo' ? 'Setting up…' : 'Explore with demo data'}
         </Button>
-        <Button size="lg" variant="outline" onClick={() => start(false)} disabled={loading !== null}>
-          {isRevisit ? (loading === 'empty' ? 'Closing…' : 'Continue') : loading === 'empty' ? 'Setting up…' : 'Start with empty data'}
+        <Button
+          size="lg"
+          variant="outline"
+          onClick={() => (isRevisit ? setConfirmClearOpen(true) : startEmpty())}
+          disabled={loading !== null}
+        >
+          {loading === 'empty' ? 'Setting up…' : isRevisit ? 'Clear data & start empty' : 'Start with empty data'}
         </Button>
       </div>
+
+      <ConfirmDialog
+        open={confirmClearOpen}
+        title="Delete all Spendly data?"
+        description="This clears every transaction, budget, and goal on this device and starts empty. This cannot be undone unless you have an exported backup."
+        confirmLabel="Delete Everything"
+        destructive
+        onConfirm={handleClearAndRestart}
+        onCancel={() => setConfirmClearOpen(false)}
+      />
     </div>
   )
 }
