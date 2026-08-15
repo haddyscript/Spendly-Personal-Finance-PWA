@@ -125,11 +125,14 @@
 @layer base {
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
   }
 
   html {
-    -webkit-tap-highlight-color: transparent;
     color-scheme: light;
+    background-color: rgb(var(--background));
+    overscroll-behavior: none;
+    -webkit-text-size-adjust: 100%;
   }
 
   html.dark {
@@ -138,11 +141,39 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    overscroll-behavior-y: none;
+    overscroll-behavior: none;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
-  button {
-    -webkit-tap-highlight-color: transparent;
+  /* Long-press should feel like a native tap, not a browser text/image callout. */
+  button,
+  a,
+  nav,
+  header,
+  img,
+  svg {
+    -webkit-touch-callout: none;
+  }
+
+  img {
+    -webkit-user-drag: none;
+    user-drag: none;
+  }
+
+  button,
+  a,
+  [role='button'] {
+    touch-action: manipulation;
+  }
+
+  /* Content the user is likely to want to copy (amounts, notes, inputs) stays selectable. */
+  input,
+  textarea,
+  [contenteditable='true'],
+  .selectable {
+    -webkit-user-select: text;
+    user-select: text;
   }
 
   #root {

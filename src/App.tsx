@@ -8,15 +8,40 @@ import { useSettings } from '@/hooks/useSettings'
 import { useTheme } from '@/hooks/useTheme'
 import { processDueRecurring } from '@/services/recurringService'
 
-const HomePage = lazy(() => import('@/pages/HomePage'))
-const TransactionsPage = lazy(() => import('@/pages/TransactionsPage'))
-const BudgetsPage = lazy(() => import('@/pages/BudgetsPage'))
-const AnalyticsPage = lazy(() => import('@/pages/AnalyticsPage'))
-const GoalsPage = lazy(() => import('@/pages/GoalsPage'))
-const SettingsPage = lazy(() => import('@/pages/SettingsPage'))
-const CategoriesPage = lazy(() => import('@/pages/CategoriesPage'))
-const RecurringPage = lazy(() => import('@/pages/RecurringPage'))
+const pageImports = {
+  home: () => import('@/pages/HomePage'),
+  transactions: () => import('@/pages/TransactionsPage'),
+  budgets: () => import('@/pages/BudgetsPage'),
+  analytics: () => import('@/pages/AnalyticsPage'),
+  goals: () => import('@/pages/GoalsPage'),
+  settings: () => import('@/pages/SettingsPage'),
+  categories: () => import('@/pages/CategoriesPage'),
+  recurring: () => import('@/pages/RecurringPage'),
+}
+
+const HomePage = lazy(pageImports.home)
+const TransactionsPage = lazy(pageImports.transactions)
+const BudgetsPage = lazy(pageImports.budgets)
+const AnalyticsPage = lazy(pageImports.analytics)
+const GoalsPage = lazy(pageImports.goals)
+const SettingsPage = lazy(pageImports.settings)
+const CategoriesPage = lazy(pageImports.categories)
+const RecurringPage = lazy(pageImports.recurring)
 const OnboardingPage = lazy(() => import('@/pages/OnboardingPage'))
+
+// Prefetch every tab's chunk once the app is idle so switching bottom-nav tabs
+// never re-triggers a Suspense fallback — tab switches should feel instant, like
+// screens already loaded in memory, not pages being fetched.
+function usePrefetchPages() {
+  useEffect(() => {
+    const prefetch = () => Object.values(pageImports).forEach((load) => load())
+    const idle = 'requestIdleCallback' in window ? window.requestIdleCallback : (cb: () => void) => setTimeout(cb, 1)
+    const handle = idle(prefetch)
+    return () => {
+      if ('cancelIdleCallback' in window && typeof handle === 'number') window.cancelIdleCallback(handle)
+    }
+  }, [])
+}
 
 function Splash() {
   return (
@@ -30,6 +55,7 @@ function Splash() {
 export default function App() {
   const { settings, isLoading } = useSettings()
   useTheme()
+  usePrefetchPages()
 
   useEffect(() => {
     processDueRecurring()
