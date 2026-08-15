@@ -1,7 +1,7 @@
 import { Sheet } from '@/components/ui/Sheet'
 import { Button } from '@/components/ui/Button'
 import { Label } from '@/components/ui/Input'
-import { Select } from '@/components/ui/Select'
+import { Dropdown } from '@/components/ui/Dropdown'
 import { useCategories } from '@/hooks/useCategories'
 import { PAYMENT_METHODS } from '@/types/models'
 import type { TransactionFilters } from '@/hooks/useTransactions'
@@ -41,50 +41,45 @@ export function TransactionFilterSheet({ open, onClose, filters, onChange }: Tra
       <div className="flex flex-col gap-4">
         <div>
           <Label htmlFor="filter-type">Type</Label>
-          <Select
+          <Dropdown
             id="filter-type"
             className="mt-1.5"
             value={filters.type ?? ''}
-            onChange={(e) => update({ type: (e.target.value || undefined) as TransactionFilters['type'] })}
-          >
-            <option value="">All types</option>
-            <option value="expense">Expense</option>
-            <option value="income">Income</option>
-          </Select>
+            onChange={(v) => update({ type: (v || undefined) as TransactionFilters['type'] })}
+            options={[
+              { value: '', label: 'All types' },
+              { value: 'expense', label: 'Expense' },
+              { value: 'income', label: 'Income' },
+            ]}
+          />
         </div>
 
         <div>
           <Label htmlFor="filter-category">Category</Label>
-          <Select
+          <Dropdown
             id="filter-category"
             className="mt-1.5"
             value={filters.categoryId ?? ''}
-            onChange={(e) => update({ categoryId: e.target.value || undefined })}
-          >
-            <option value="">All categories</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </Select>
+            onChange={(v) => update({ categoryId: v || undefined })}
+            options={[
+              { value: '', label: 'All categories' },
+              ...categories.map((c) => ({ value: c.id, label: c.name })),
+            ]}
+          />
         </div>
 
         <div>
           <Label htmlFor="filter-payment">Payment Method</Label>
-          <Select
+          <Dropdown
             id="filter-payment"
             className="mt-1.5"
             value={filters.paymentMethod ?? ''}
-            onChange={(e) => update({ paymentMethod: (e.target.value || undefined) as TransactionFilters['paymentMethod'] })}
-          >
-            <option value="">All methods</option>
-            {PAYMENT_METHODS.map((m) => (
-              <option key={m} value={m}>
-                {PAYMENT_METHOD_LABELS[m]}
-              </option>
-            ))}
-          </Select>
+            onChange={(v) => update({ paymentMethod: (v || undefined) as TransactionFilters['paymentMethod'] })}
+            options={[
+              { value: '', label: 'All methods' },
+              ...PAYMENT_METHODS.map((m) => ({ value: m, label: PAYMENT_METHOD_LABELS[m] })),
+            ]}
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -112,10 +107,16 @@ export function TransactionFilterSheet({ open, onClose, filters, onChange }: Tra
 
         <div>
           <Label htmlFor="filter-sort">Sort</Label>
-          <Select id="filter-sort" className="mt-1.5" value={filters.sort ?? 'newest'} onChange={(e) => update({ sort: e.target.value as TransactionFilters['sort'] })}>
-            <option value="newest">Newest first</option>
-            <option value="oldest">Oldest first</option>
-          </Select>
+          <Dropdown
+            id="filter-sort"
+            className="mt-1.5"
+            value={filters.sort ?? 'newest'}
+            onChange={(v) => update({ sort: v as TransactionFilters['sort'] })}
+            options={[
+              { value: 'newest', label: 'Newest first' },
+              { value: 'oldest', label: 'Oldest first' },
+            ]}
+          />
         </div>
 
         <div className="flex gap-3 pt-1">
