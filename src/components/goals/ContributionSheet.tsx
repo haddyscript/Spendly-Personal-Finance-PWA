@@ -57,7 +57,6 @@ export function ContributionSheet({ open, onClose, goal }: ContributionSheetProp
             <input
               id="contribution-amount"
               inputMode="decimal"
-              autoFocus
               placeholder="0.00"
               value={amount}
               onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ''))}
