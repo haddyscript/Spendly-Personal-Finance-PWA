@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { cn } from '@/lib/cn'
+import { GLASS_STRONG } from '@/lib/glass'
 
 interface DialogProps {
   open: boolean
@@ -36,7 +37,8 @@ export function Dialog({ open, onClose, children, className, labelledBy }: Dialo
         aria-modal="true"
         aria-labelledby={labelledBy}
         className={cn(
-          'relative z-10 w-full max-w-sm animate-dialog-in rounded-2xl border border-border bg-card p-5 shadow-2xl',
+          GLASS_STRONG,
+          'relative z-10 w-full max-w-sm animate-dialog-in rounded-2xl p-5 shadow-2xl',
           className,
         )}
       >

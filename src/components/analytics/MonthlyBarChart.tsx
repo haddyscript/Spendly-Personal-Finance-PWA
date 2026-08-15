@@ -4,6 +4,7 @@ import { formatCurrencyCompact } from '@/utils/money'
 import { useSettings } from '@/hooks/useSettings'
 import { useIsDarkMode } from '@/hooks/useIsDarkMode'
 import { INCOME_COLOR, EXPENSE_COLOR } from '@/lib/colors'
+import { GLASS_TOOLTIP } from '@/lib/glass'
 
 export interface MonthlyBarChartProps {
   data: MonthlyTotal[]
@@ -21,7 +22,7 @@ function TooltipContent({ active, payload }: { active?: boolean; payload?: { pay
   if (!active || !payload?.length) return null
   const point = payload[0].payload
   return (
-    <div className="rounded-lg border border-border bg-card px-3 py-2 text-xs shadow-lg">
+    <div className={`${GLASS_TOOLTIP} rounded-lg px-3 py-2 text-xs shadow-lg`}>
       <p className="font-medium text-foreground">{monthLabel(point.month)}</p>
       <p className="text-success">Income: {formatCurrencyCompact(point.income, settings?.currency)}</p>
       <p className="text-destructive">Expense: {formatCurrencyCompact(point.expense, settings?.currency)}</p>

@@ -5,6 +5,7 @@ import { formatCurrency } from '@/utils/money'
 import { calculatePercentage } from '@/utils/calculations'
 import { useSettings } from '@/hooks/useSettings'
 import { useIsDarkMode } from '@/hooks/useIsDarkMode'
+import { GLASS_TOOLTIP } from '@/lib/glass'
 
 export interface CategorySlice {
   categoryId: string
@@ -23,7 +24,7 @@ function TooltipContent({ active, payload }: { active?: boolean; payload?: { pay
   if (!active || !payload?.length) return null
   const slice = payload[0].payload
   return (
-    <div className="rounded-lg border border-border bg-card px-3 py-2 text-xs shadow-lg">
+    <div className={`${GLASS_TOOLTIP} rounded-lg px-3 py-2 text-xs shadow-lg`}>
       <p className="font-medium text-foreground">{slice.name}</p>
       <p className="text-muted-foreground">{formatCurrency(slice.totalMinor, settings?.currency)}</p>
     </div>

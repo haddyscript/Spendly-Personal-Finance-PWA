@@ -1,6 +1,7 @@
 import { Download, Share, X } from 'lucide-react'
 import { useInstallPrompt } from '@/hooks/useInstallPrompt'
 import { Button } from '@/components/ui/Button'
+import { GLASS } from '@/lib/glass'
 
 export function InstallPrompt() {
   const { shouldShow, isIosSafari, canPromptAndroid, promptInstall, dismiss } = useInstallPrompt()
@@ -8,7 +9,7 @@ export function InstallPrompt() {
   if (!shouldShow) return null
 
   return (
-    <div className="relative flex items-start gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
+    <div className={`${GLASS} relative flex items-start gap-3 rounded-2xl p-4 shadow-sm`}>
       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground">
         <Download className="h-5 w-5" aria-hidden="true" />
       </div>

@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/useToast'
 import { updateSettings } from '@/services/settingsService'
 import { clearAllData } from '@/services/exportImportService'
 import { seedDemoData } from '@/db/seed'
+import { GLASS } from '@/lib/glass'
 
 const FEATURES = [
   { icon: WifiOff, text: 'Works fully offline — your data never leaves this device' },
@@ -59,6 +60,11 @@ export default function OnboardingPage() {
 
   return (
     <div className="relative flex min-h-dvh flex-col justify-between bg-background px-6 pb-8 pt-14 safe-top safe-bottom">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
+        <div className="absolute -top-16 -left-16 h-64 w-64 rounded-full bg-violet-500/20 blur-[90px]" />
+        <div className="absolute top-1/3 -right-20 h-72 w-72 rounded-full bg-orange-500/15 blur-[100px]" />
+        <div className="absolute bottom-10 left-1/4 h-56 w-56 rounded-full bg-blue-500/10 blur-[90px]" />
+      </div>
       {isRevisit && (
         <button
           type="button"
@@ -77,7 +83,7 @@ export default function OnboardingPage() {
 
         <div className="mt-10 flex w-full flex-col gap-4 text-left">
           {FEATURES.map(({ icon: Icon, text }) => (
-            <div key={text} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3.5">
+            <div key={text} className={`${GLASS} flex items-center gap-3 rounded-2xl p-3.5`}>
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground">
                 <Icon className="h-5 w-5" aria-hidden="true" />
               </div>

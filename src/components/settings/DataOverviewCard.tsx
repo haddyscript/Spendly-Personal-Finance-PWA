@@ -6,6 +6,7 @@ import { useCategories } from '@/hooks/useCategories'
 import { useGoals } from '@/hooks/useGoals'
 import { useRecurringRules } from '@/hooks/useRecurring'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { GLASS } from '@/lib/glass'
 
 interface StatTileProps {
   to: string
@@ -18,7 +19,7 @@ function StatTile({ to, icon: Icon, value, label }: StatTileProps) {
   return (
     <Link
       to={to}
-      className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-4 transition-colors active:bg-secondary hover:bg-secondary/60"
+      className={`${GLASS} flex flex-col gap-2 rounded-2xl p-4 transition-colors active:bg-secondary hover:bg-secondary/60`}
     >
       <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-accent-foreground">
         <Icon className="h-5 w-5" aria-hidden="true" />

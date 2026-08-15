@@ -61,15 +61,20 @@ export function BottomNav({ onAddClick }: { onAddClick: () => void }) {
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-2 z-40 flex justify-center safe-bottom">
       <nav aria-label="Primary" className="pointer-events-auto relative w-full max-w-lg px-4">
-        <div className="relative" style={{ height: BAR_VIEWBOX_HEIGHT }}>
-          <svg
-            className="absolute inset-0 h-full w-full drop-shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
-            viewBox={`0 0 ${BAR_VIEWBOX_WIDTH} ${BAR_VIEWBOX_HEIGHT}`}
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            <path d={BAR_PATH} fill="#141417" />
-          </svg>
+        <div
+          className="relative drop-shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
+          style={{ height: BAR_VIEWBOX_HEIGHT }}
+        >
+          <div className="absolute inset-0 overflow-hidden rounded-[32px] backdrop-blur-xl">
+            <svg
+              className="absolute inset-0 h-full w-full"
+              viewBox={`0 0 ${BAR_VIEWBOX_WIDTH} ${BAR_VIEWBOX_HEIGHT}`}
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <path d={BAR_PATH} fill="rgba(20, 20, 23, 0.62)" />
+            </svg>
+          </div>
 
           <ul className="relative flex h-full items-stretch">
             {LEFT_TABS.map((tab) => (

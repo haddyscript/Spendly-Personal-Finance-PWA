@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/cn'
+import { GLASS_STRONG } from '@/lib/glass'
 
 interface SheetProps {
   open: boolean
@@ -37,7 +38,8 @@ export function Sheet({ open, onClose, title, children, className }: SheetProps)
         aria-modal="true"
         aria-label={title}
         className={cn(
-          'relative z-10 max-h-[92dvh] w-full animate-sheet-in overflow-y-auto rounded-t-3xl border-t border-border bg-card p-5 shadow-2xl safe-bottom sm:max-w-md sm:rounded-3xl sm:border',
+          GLASS_STRONG,
+          'relative z-10 max-h-[92dvh] w-full animate-sheet-in overflow-y-auto rounded-t-3xl p-5 shadow-2xl safe-bottom sm:max-w-md sm:rounded-3xl',
           className,
         )}
       >

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { GLASS_HEADER } from '@/lib/glass'
 
 export interface PageHeaderProps {
   title: string
@@ -8,7 +9,7 @@ export interface PageHeaderProps {
 
 export function PageHeader({ title, subtitle, action }: PageHeaderProps) {
   return (
-    <header className="sticky top-0 z-30 border-b border-border/60 bg-background/95 px-5 pb-4 pt-6 backdrop-blur safe-top">
+    <header className={`${GLASS_HEADER} sticky top-0 z-30 border-b border-border/50 px-5 pb-4 pt-6 safe-top`}>
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <h1 className="truncate text-2xl font-bold tracking-tight">{title}</h1>

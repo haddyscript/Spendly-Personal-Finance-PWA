@@ -2,6 +2,7 @@ import { useSyncExternalStore } from 'react'
 import { CheckCircle2, AlertTriangle, Info, X } from 'lucide-react'
 import { dismissToast, getToastsSnapshot, subscribeToasts } from '@/lib/toastStore'
 import { cn } from '@/lib/cn'
+import { GLASS_STRONG } from '@/lib/glass'
 
 export function Toaster() {
   const toasts = useSyncExternalStore(subscribeToasts, getToastsSnapshot)
@@ -20,7 +21,8 @@ export function Toaster() {
           <div
             key={t.id}
             className={cn(
-              'pointer-events-auto flex w-full max-w-sm animate-toast-in items-start gap-3 rounded-2xl border border-border bg-card px-4 py-3 shadow-lg',
+              GLASS_STRONG,
+              'pointer-events-auto flex w-full max-w-sm animate-toast-in items-start gap-3 rounded-2xl px-4 py-3 shadow-lg',
             )}
           >
             <Icon
