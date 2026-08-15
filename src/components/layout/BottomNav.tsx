@@ -59,7 +59,7 @@ function TabLink({ to, label, icon: Icon, end }: NavTab) {
 
 export function BottomNav({ onAddClick }: { onAddClick: () => void }) {
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center safe-bottom">
+    <div className="pointer-events-none fixed inset-x-0 bottom-2 z-40 flex justify-center safe-bottom">
       <nav aria-label="Primary" className="pointer-events-auto relative w-full max-w-lg px-4">
         <div className="relative" style={{ height: BAR_VIEWBOX_HEIGHT }}>
           <svg
