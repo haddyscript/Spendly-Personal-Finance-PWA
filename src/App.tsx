@@ -46,8 +46,8 @@ function usePrefetchPages() {
 function Splash() {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-background">
-      <Logo size="lg" />
-      <p className="text-sm text-muted-foreground">Loading Spendly…</p>
+      <Logo size="lg" className="animate-logo-launch" />
+      <p className="animate-splash-text text-sm text-muted-foreground">Loading Spendly…</p>
     </div>
   )
 }
