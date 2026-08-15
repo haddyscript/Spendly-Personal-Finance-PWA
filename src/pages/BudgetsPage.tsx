@@ -115,7 +115,14 @@ export default function BudgetsPage() {
         )}
       </div>
 
-      <BudgetFormSheet open={overallFormOpen} onClose={() => setOverallFormOpen(false)} month={month} categoryId={null} existingAmountMinor={overall?.amountMinor} />
+      <BudgetFormSheet
+        open={overallFormOpen}
+        onClose={() => setOverallFormOpen(false)}
+        month={month}
+        categoryId={null}
+        budgetId={overall?.id}
+        existingAmountMinor={overall?.amountMinor}
+      />
 
       <CategoryPicker
         open={categoryPickerOpen}
@@ -130,6 +137,7 @@ export default function BudgetsPage() {
         onClose={() => setActiveCategoryId(null)}
         month={month}
         categoryId={activeCategoryId}
+        budgetId={byCategory.find((b) => b.categoryId === activeCategoryId)?.id}
         existingAmountMinor={byCategory.find((b) => b.categoryId === activeCategoryId)?.amountMinor}
       />
     </div>
