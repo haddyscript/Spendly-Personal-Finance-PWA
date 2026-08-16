@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { Logo } from '@/components/layout/Logo'
@@ -43,6 +43,19 @@ function usePrefetchPages() {
   }, [])
 }
 
+const SPLASH_MIN_DURATION_MS = 10_000
+
+// Keeps the launch splash on screen for a minimum duration, independent of how fast
+// settings actually load, so the entrance animation has room to play out on cold start.
+function useMinSplashDuration() {
+  const [elapsed, setElapsed] = useState(false)
+  useEffect(() => {
+    const timer = setTimeout(() => setElapsed(true), SPLASH_MIN_DURATION_MS)
+    return () => clearTimeout(timer)
+  }, [])
+  return elapsed
+}
+
 function Splash() {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-background">
@@ -54,6 +67,7 @@ function Splash() {
 
 export default function App() {
   const { settings, isLoading } = useSettings()
+  const splashMinElapsed = useMinSplashDuration()
   useTheme()
   usePrefetchPages()
 
@@ -61,7 +75,7 @@ export default function App() {
     processDueRecurring()
   }, [])
 
-  if (isLoading || !settings) {
+  if (isLoading || !settings || !splashMinElapsed) {
     return <Splash />
   }
 
