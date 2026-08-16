@@ -15,18 +15,7 @@ import { PAYMENT_METHODS } from '@/types/models'
 import type { PaymentMethod, Transaction, TransactionType } from '@/types/models'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Trash2 } from 'lucide-react'
-
-const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
-  cash: 'Cash',
-  gcash: 'GCash',
-  gotyme: 'GoTyme',
-  maribank: 'Maribank',
-  unionbank: 'Union Bank',
-  securitybank: 'Security Bank',
-  metrobank: 'Metro Bank',
-  credit_card: 'Credit Card',
-  other: 'Other',
-}
+import { PAYMENT_METHOD_LABELS } from '@/lib/paymentMethods'
 
 export interface TransactionFormSheetProps {
   open: boolean

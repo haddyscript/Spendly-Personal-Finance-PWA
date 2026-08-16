@@ -14,18 +14,7 @@ import { PAYMENT_METHODS, RECURRING_FREQUENCIES } from '@/types/models'
 import type { PaymentMethod, RecurringFrequency, RecurringTransaction, TransactionType } from '@/types/models'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Trash2 } from 'lucide-react'
-
-const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
-  cash: 'Cash',
-  gcash: 'GCash',
-  gotyme: 'GoTyme',
-  maribank: 'Maribank',
-  unionbank: 'Union Bank',
-  securitybank: 'Security Bank',
-  metrobank: 'Metro Bank',
-  credit_card: 'Credit Card',
-  other: 'Other',
-}
+import { PAYMENT_METHOD_LABELS } from '@/lib/paymentMethods'
 
 const FREQUENCY_LABELS: Record<RecurringFrequency, string> = {
   daily: 'Daily',

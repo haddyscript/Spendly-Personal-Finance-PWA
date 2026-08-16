@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/Input'
 import { Dropdown } from '@/components/ui/Dropdown'
 import { useCategories } from '@/hooks/useCategories'
 import { PAYMENT_METHODS } from '@/types/models'
+import { PAYMENT_METHOD_LABELS } from '@/lib/paymentMethods'
 import type { TransactionFilters } from '@/hooks/useTransactions'
 
 export interface TransactionFilterSheetProps {
@@ -11,18 +12,6 @@ export interface TransactionFilterSheetProps {
   onClose: () => void
   filters: TransactionFilters
   onChange: (filters: TransactionFilters) => void
-}
-
-const PAYMENT_METHOD_LABELS: Record<string, string> = {
-  cash: 'Cash',
-  gcash: 'GCash',
-  gotyme: 'GoTyme',
-  maribank: 'Maribank',
-  unionbank: 'Union Bank',
-  securitybank: 'Security Bank',
-  metrobank: 'Metro Bank',
-  credit_card: 'Credit Card',
-  other: 'Other',
 }
 
 export function TransactionFilterSheet({ open, onClose, filters, onChange }: TransactionFilterSheetProps) {

@@ -10,6 +10,9 @@ import { TransactionFormSheet } from '@/components/transactions/TransactionFormS
 import { useFilteredTransactions } from '@/hooks/useTransactions'
 import type { TransactionFilters } from '@/hooks/useTransactions'
 import { useCategoryMap } from '@/hooks/useCategories'
+import { useSettings } from '@/hooks/useSettings'
+import { calculateExpenseTotal, calculateIncomeTotal } from '@/utils/calculations'
+import { formatCurrency } from '@/utils/money'
 import type { Transaction } from '@/types/models'
 import { useOutletContext, useSearchParams } from 'react-router-dom'
 import type { AppShellContext } from '@/components/layout/AppShell'
@@ -23,6 +26,7 @@ export default function TransactionsPage() {
   const [editing, setEditing] = useState<Transaction | null>(null)
   const { openAddTransaction } = useOutletContext<AppShellContext>()
   const { categoryMap } = useCategoryMap()
+  const { settings } = useSettings()
 
   const filterChipCategory = filters.categoryId ? categoryMap.get(filters.categoryId) : undefined
 
@@ -41,6 +45,9 @@ export default function TransactionsPage() {
 
   const { transactions, isLoading } = useFilteredTransactions({ ...filters, search })
   const hasAnyFilter = activeFilterCount > 0 || search.length > 0
+
+  const expenseTotal = useMemo(() => calculateExpenseTotal(transactions), [transactions])
+  const incomeTotal = useMemo(() => calculateIncomeTotal(transactions), [transactions])
 
   return (
     <div className="flex flex-col gap-4 pb-6 pt-6 safe-top">
@@ -83,6 +90,20 @@ export default function TransactionsPage() {
             {filterChipCategory.name}
             <X className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
+        </div>
+      )}
+
+      {!isLoading && transactions.length > 0 && (
+        <div className="flex items-center justify-between px-5 text-sm">
+          <span className="text-muted-foreground">
+            {transactions.length} transaction{transactions.length === 1 ? '' : 's'}
+          </span>
+          <span className="flex items-center gap-3 font-semibold tabular-nums">
+            {expenseTotal > 0 && (
+              <span className="text-foreground">-{formatCurrency(expenseTotal, settings?.currency)}</span>
+            )}
+            {incomeTotal > 0 && <span className="text-success">+{formatCurrency(incomeTotal, settings?.currency)}</span>}
+          </span>
         </div>
       )}
 
