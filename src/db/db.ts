@@ -32,6 +32,28 @@ export class SpendlyDB extends Dexie {
       settings: 'id',
     })
 
+    // v3: adds Transaction.settledAt for tracking paid-off Atome/Credit Card spending. Existing
+    // credit-method transactions predate this feature and shouldn't suddenly appear as owed, so
+    // they're backfilled as already settled — only new spending is tracked as outstanding.
+    this.version(3)
+      .stores({
+        transactions: 'id, type, categoryId, date, paymentMethod, recurringId, [type+date]',
+        categories: 'id, type',
+        budgets: 'id, month, categoryId, [month+categoryId]',
+        goals: 'id, targetDate, completedAt, createdAt',
+        recurring: 'id, nextOccurrence',
+        settings: 'id',
+      })
+      .upgrade(async (tx) => {
+        const now = new Date().toISOString()
+        await tx
+          .table('transactions')
+          .where('paymentMethod')
+          .anyOf(['atome', 'credit_card'])
+          .and((t) => t.type === 'expense')
+          .modify({ settledAt: now })
+      })
+
     this.on('populate', () => this.populateDefaults())
   }
 

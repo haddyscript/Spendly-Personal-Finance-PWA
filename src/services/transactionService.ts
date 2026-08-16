@@ -1,4 +1,5 @@
 import { db } from '@/db/db'
+import { CREDIT_PAYMENT_METHODS } from '@/types/models'
 import type { PaymentMethod, Transaction, TransactionType } from '@/types/models'
 import { createId } from '@/utils/id'
 import { toDateKey } from '@/utils/date'
@@ -63,4 +64,19 @@ export async function reassignCategory(fromCategoryId: string, toCategoryId: str
   await db.transactions.bulkPut(
     affected.map((t) => ({ ...t, categoryId: toCategoryId, updatedAt: new Date().toISOString() })),
   )
+}
+
+export async function getOutstandingCreditTransactions(): Promise<Transaction[]> {
+  const all = await getAllTransactions()
+  return all.filter((t) => t.type === 'expense' && CREDIT_PAYMENT_METHODS.includes(t.paymentMethod) && !t.settledAt)
+}
+
+export async function markTransactionSettled(id: string): Promise<void> {
+  await db.transactions.update(id, { settledAt: new Date().toISOString(), updatedAt: new Date().toISOString() })
+}
+
+export async function markAllCreditSettled(): Promise<void> {
+  const outstanding = await getOutstandingCreditTransactions()
+  const now = new Date().toISOString()
+  await db.transactions.bulkPut(outstanding.map((t) => ({ ...t, settledAt: now, updatedAt: now })))
 }

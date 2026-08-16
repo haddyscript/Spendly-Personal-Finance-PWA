@@ -1,10 +1,22 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@/db/db'
+import { CREDIT_PAYMENT_METHODS } from '@/types/models'
 import type { PaymentMethod, TransactionType } from '@/types/models'
 
 export function useTransactions() {
   const transactions = useLiveQuery(() => db.transactions.orderBy('date').reverse().toArray(), [])
   return { transactions: transactions ?? [], isLoading: transactions === undefined }
+}
+
+export function useOutstandingCredit() {
+  const transactions = useLiveQuery(async () => {
+    const all = await db.transactions.orderBy('date').reverse().toArray()
+    return all.filter((t) => t.type === 'expense' && CREDIT_PAYMENT_METHODS.includes(t.paymentMethod) && !t.settledAt)
+  }, [])
+
+  const list = transactions ?? []
+  const totalMinor = list.reduce((sum, t) => sum + t.amountMinor, 0)
+  return { transactions: list, totalMinor, isLoading: transactions === undefined }
 }
 
 export function useRecentTransactions(limit: number) {

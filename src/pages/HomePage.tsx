@@ -9,9 +9,11 @@ import { InstallPrompt } from '@/components/pwa/InstallPrompt'
 import { TransactionList } from '@/components/transactions/TransactionList'
 import { BudgetProgressCard } from '@/components/budgets/BudgetProgressCard'
 import { TransactionFormSheet } from '@/components/transactions/TransactionFormSheet'
+import { CreditDueCard } from '@/components/home/CreditDueCard'
+import { CreditDueSheet } from '@/components/home/CreditDueSheet'
 import { useBalance, useMonthSummary } from '@/hooks/useAnalytics'
 import { useBudgetsForMonth } from '@/hooks/useBudgets'
-import { useRecentTransactions } from '@/hooks/useTransactions'
+import { useOutstandingCredit, useRecentTransactions } from '@/hooks/useTransactions'
 import { useGoals } from '@/hooks/useGoals'
 import { useSettings } from '@/hooks/useSettings'
 import { formatCurrency } from '@/utils/money'
@@ -28,7 +30,9 @@ export default function HomePage() {
   const { overall, isLoading: budgetLoading } = useBudgetsForMonth()
   const { transactions: recent, isLoading: recentLoading } = useRecentTransactions(5)
   const { goals } = useGoals()
+  const { totalMinor: creditDueMinor, transactions: creditDue } = useOutstandingCredit()
   const [editing, setEditing] = useState<Transaction | null>(null)
+  const [creditSheetOpen, setCreditSheetOpen] = useState(false)
   const { openAddTransaction } = useOutletContext<AppShellContext>()
 
   const isLoading = balanceLoading || summaryLoading
@@ -70,6 +74,10 @@ export default function HomePage() {
           </div>
         </CardContent>
       </Card>
+
+      {creditDueMinor > 0 && (
+        <CreditDueCard totalMinor={creditDueMinor} count={creditDue.length} onClick={() => setCreditSheetOpen(true)} />
+      )}
 
       {!budgetLoading && overall && (
         <BudgetProgressCard label="Monthly Budget" spentMinor={expense} budgetMinor={overall.amountMinor} />
@@ -125,6 +133,7 @@ export default function HomePage() {
       </div>
 
       <TransactionFormSheet open={editing !== null} onClose={() => setEditing(null)} transaction={editing ?? undefined} />
+      <CreditDueSheet open={creditSheetOpen} onClose={() => setCreditSheetOpen(false)} />
     </div>
   )
 }

@@ -21,6 +21,9 @@ export const PAYMENT_METHODS = [
 ] as const
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number]
 
+/** "Pay later" methods: spending here is a liability until settled, not an immediate cash outflow. */
+export const CREDIT_PAYMENT_METHODS: readonly PaymentMethod[] = ['atome', 'credit_card']
+
 export const RECURRING_FREQUENCIES = ['daily', 'weekly', 'monthly', 'yearly'] as const
 export type RecurringFrequency = (typeof RECURRING_FREQUENCIES)[number]
 
@@ -45,6 +48,8 @@ export interface Transaction {
   paymentMethod: PaymentMethod
   /** Set when this transaction was generated from a recurring rule. */
   recurringId?: string
+  /** ISO timestamp when a credit-method (Atome/Credit Card) expense was paid off. Absent = still owed. */
+  settledAt?: string
   createdAt: string
   updatedAt: string
 }
