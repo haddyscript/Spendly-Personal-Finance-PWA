@@ -23,6 +23,7 @@ export function Dropdown({ id, value, options, onChange, className }: DropdownPr
   const [open, setOpen] = useState(false)
   const [position, setPosition] = useState<{ left: number; width: number; top?: number; bottom?: number } | null>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
 
   const selected = options.find((o) => o.value === value)
 
@@ -44,15 +45,20 @@ export function Dropdown({ id, value, options, onChange, className }: DropdownPr
   useEffect(() => {
     if (!open) return
     const close = () => setOpen(false)
+    // capture:true so scrolling inside the parent sheet (which doesn't bubble) still closes the menu —
+    // but ignore scrolls that originate inside the menu itself, since long option lists scroll internally.
+    const onScroll = (e: Event) => {
+      if (e.target instanceof Node && menuRef.current?.contains(e.target)) return
+      close()
+    }
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') close()
     }
-    // capture:true so scrolling inside the parent sheet (which doesn't bubble) still closes the menu
-    document.addEventListener('scroll', close, true)
+    document.addEventListener('scroll', onScroll, true)
     window.addEventListener('resize', close)
     document.addEventListener('keydown', onKey)
     return () => {
-      document.removeEventListener('scroll', close, true)
+      document.removeEventListener('scroll', onScroll, true)
       window.removeEventListener('resize', close)
       document.removeEventListener('keydown', onKey)
     }
@@ -85,6 +91,7 @@ export function Dropdown({ id, value, options, onChange, className }: DropdownPr
           <>
             <div className="fixed inset-0 z-[80]" onClick={() => setOpen(false)} aria-hidden="true" />
             <div
+              ref={menuRef}
               role="listbox"
               className={cn(GLASS_STRONG, 'fixed z-[80] overflow-y-auto rounded-2xl p-1.5 shadow-2xl animate-fade-in')}
               style={{
