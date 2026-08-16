@@ -32,9 +32,11 @@ export class SpendlyDB extends Dexie {
       settings: 'id',
     })
 
-    // v3: adds Transaction.settledAt for tracking paid-off Atome/Credit Card spending. Existing
-    // credit-method transactions predate this feature and shouldn't suddenly appear as owed, so
-    // they're backfilled as already settled — only new spending is tracked as outstanding.
+    // v3: adds Transaction.settledAt for tracking paid-off Atome/Credit Card spending.
+    // Backfilled all existing credit-method transactions as settled. Superseded by v4 below —
+    // this couldn't distinguish spending that was genuinely already paid from a recent purchase
+    // still awaiting its next bill (e.g. an Atome purchase due the 15th), so it could silently
+    // mark real outstanding debt as paid.
     this.version(3)
       .stores({
         transactions: 'id, type, categoryId, date, paymentMethod, recurringId, [type+date]',
@@ -52,6 +54,30 @@ export class SpendlyDB extends Dexie {
           .anyOf(['atome', 'credit_card'])
           .and((t) => t.type === 'expense')
           .modify({ settledAt: now })
+      })
+
+    // v4: reverses v3's blanket auto-settle. There's no reliable way to tell "already paid before
+    // this feature existed" apart from "still owed" from the data alone, so the safe default is to
+    // treat everything as outstanding and let the Credit to Pay sheet's mark-as-paid actions be the
+    // only source of truth going forward.
+    this.version(4)
+      .stores({
+        transactions: 'id, type, categoryId, date, paymentMethod, recurringId, [type+date]',
+        categories: 'id, type',
+        budgets: 'id, month, categoryId, [month+categoryId]',
+        goals: 'id, targetDate, completedAt, createdAt',
+        recurring: 'id, nextOccurrence',
+        settings: 'id',
+      })
+      .upgrade(async (tx) => {
+        await tx
+          .table('transactions')
+          .where('paymentMethod')
+          .anyOf(['atome', 'credit_card'])
+          .and((t) => t.type === 'expense' && !!t.settledAt)
+          .modify((t) => {
+            delete t.settledAt
+          })
       })
 
     this.on('populate', () => this.populateDefaults())
