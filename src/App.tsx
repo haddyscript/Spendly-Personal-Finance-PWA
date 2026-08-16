@@ -43,7 +43,7 @@ function usePrefetchPages() {
   }, [])
 }
 
-const SPLASH_MIN_DURATION_MS = 10_000
+const SPLASH_MIN_DURATION_MS = 5_000
 
 // Keeps the launch splash on screen for a minimum duration, independent of how fast
 // settings actually load, so the entrance animation has room to play out on cold start.
@@ -58,9 +58,29 @@ function useMinSplashDuration() {
 
 function Splash() {
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-background">
-      <Logo size="lg" className="animate-logo-launch" />
-      <p className="animate-splash-text text-sm text-muted-foreground">Loading Spendly…</p>
+    <div className="relative flex min-h-dvh flex-col items-center justify-center gap-5 overflow-hidden bg-background">
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="animate-glow-pulse absolute -top-16 -left-16 h-64 w-64 rounded-full bg-violet-500/20 blur-[90px]" />
+        <div className="animate-glow-pulse absolute top-1/3 -right-20 h-72 w-72 rounded-full bg-orange-500/15 blur-[100px] [animation-delay:0.7s]" />
+        <div className="animate-glow-pulse absolute bottom-10 left-1/4 h-56 w-56 rounded-full bg-blue-500/10 blur-[90px] [animation-delay:1.4s]" />
+      </div>
+
+      <div className="relative flex items-center justify-center">
+        <span className="animate-logo-ring absolute h-14 w-14 rounded-2xl border-2 border-violet-500/50" aria-hidden="true" />
+        <span
+          className="animate-logo-ring absolute h-14 w-14 rounded-2xl border-2 border-violet-500/50 [animation-delay:0.9s]"
+          aria-hidden="true"
+        />
+        <Logo size="lg" className="animate-logo-launch relative" />
+      </div>
+
+      <h1 className="animate-splash-text text-2xl font-bold tracking-tight">Spendly</h1>
+
+      <div className="animate-splash-text flex items-center gap-1.5 [animation-delay:0.15s]">
+        <span className="animate-splash-dot h-1.5 w-1.5 rounded-full bg-muted-foreground" />
+        <span className="animate-splash-dot h-1.5 w-1.5 rounded-full bg-muted-foreground [animation-delay:0.15s]" />
+        <span className="animate-splash-dot h-1.5 w-1.5 rounded-full bg-muted-foreground [animation-delay:0.3s]" />
+      </div>
     </div>
   )
 }
