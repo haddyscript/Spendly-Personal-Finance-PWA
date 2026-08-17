@@ -4,6 +4,13 @@
 
 Spendly is a private, offline-first personal finance Progressive Web App. It tracks income, expenses, budgets, and savings goals entirely on your device — no accounts, no servers, no tracking. Install it on your phone and it works exactly the same with the internet off.
 
+<p align="center">
+  <img src="docs/screenshots/home.png" width="200" alt="Spendly home dashboard" />
+  <img src="docs/screenshots/transactions.png" width="200" alt="Spendly transactions list" />
+  <img src="docs/screenshots/analytics.png" width="200" alt="Spendly analytics dashboard" />
+  <img src="docs/screenshots/budgets.png" width="200" alt="Spendly budgets screen" />
+</p>
+
 ---
 
 ## Features
@@ -21,7 +28,27 @@ Spendly is a private, offline-first personal finance Progressive Web App. It tra
 
 ## Screenshots
 
-_Add screenshots of the Home, Transactions, Budgets, and Analytics screens here._
+<p align="center">
+  <img src="docs/screenshots/home.png" width="200" alt="Home dashboard" /><br />
+  <sub>Home — balance, budget progress, recent activity</sub>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/transactions.png" width="200" alt="Transactions list" />
+  <img src="docs/screenshots/budgets.png" width="200" alt="Budgets screen" />
+  <img src="docs/screenshots/analytics.png" width="200" alt="Analytics dashboard" />
+</p>
+<p align="center">
+  <sub>Transactions &nbsp;·&nbsp; Budgets &nbsp;·&nbsp; Analytics</sub>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/goals.png" width="200" alt="Goals screen" />
+  <img src="docs/screenshots/settings.png" width="200" alt="Settings screen" />
+</p>
+<p align="center">
+  <sub>Goals &nbsp;·&nbsp; Settings</sub>
+</p>
 
 ---
 
