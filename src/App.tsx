@@ -43,7 +43,7 @@ function usePrefetchPages() {
   }, [])
 }
 
-const SPLASH_MIN_DURATION_MS = 5_000
+const SPLASH_MIN_DURATION_MS = 3_000
 
 // Keeps the launch splash on screen for a minimum duration, independent of how fast
 // settings actually load, so the entrance animation has room to play out on cold start.
