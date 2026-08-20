@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { OfflineBanner } from '@/components/pwa/OfflineBanner'
 import { TransactionFormSheet } from '@/components/transactions/TransactionFormSheet'
@@ -10,6 +10,7 @@ export interface AppShellContext {
 
 export function AppShell() {
   const [addOpen, setAddOpen] = useState(false)
+  const location = useLocation()
   const context: AppShellContext = { openAddTransaction: () => setAddOpen(true) }
 
   return (
@@ -21,7 +22,10 @@ export function AppShell() {
       </div>
       <OfflineBanner />
       <main className="flex-1 pb-28">
-        <Outlet context={context} />
+        {/* Keying on the path remounts this wrapper on every navigation, which restarts the CSS animation. */}
+        <div key={location.pathname} className="animate-page-in">
+          <Outlet context={context} />
+        </div>
       </main>
       <BottomNav onAddClick={() => setAddOpen(true)} />
       <TransactionFormSheet open={addOpen} onClose={() => setAddOpen(false)} />

@@ -227,6 +227,9 @@
   .animate-splash-dot {
     animation: splash-dot 1.2s ease-in-out infinite;
   }
+  .animate-page-in {
+    animation: page-in 0.22s ease-out both;
+  }
 }
 
 @keyframes fade-in {
@@ -326,6 +329,17 @@
   }
 }
 
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-in,
   .animate-sheet-in,
@@ -335,7 +349,8 @@
   .animate-splash-text,
   .animate-glow-pulse,
   .animate-logo-ring,
-  .animate-splash-dot {
+  .animate-splash-dot,
+  .animate-page-in {
     animation: none;
   }
 }
