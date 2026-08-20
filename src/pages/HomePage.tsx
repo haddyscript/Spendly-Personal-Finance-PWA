@@ -50,27 +50,27 @@ export default function HomePage() {
 
       <InstallPrompt />
 
-      <Card className="border-none bg-primary text-primary-foreground shadow-sm">
+      <Card className="border-none bg-gradient-to-br from-violet-600 to-indigo-700 text-white shadow-sm">
         <CardContent className="p-5">
-          <p className="text-sm text-primary-foreground/70">Current Balance</p>
+          <p className="text-sm text-white/70">Current Balance</p>
           {isLoading ? (
-            <Skeleton className="mt-2 h-9 w-40 bg-primary-foreground/15" />
+            <Skeleton className="mt-2 h-9 w-40 bg-white/15" />
           ) : (
             <p className="mt-1 text-4xl font-bold tabular-nums">{formatCurrency(balance, settings?.currency)}</p>
           )}
 
-          <div className="mt-5 grid grid-cols-2 gap-4 border-t border-primary-foreground/15 pt-4">
+          <div className="mt-5 grid grid-cols-2 gap-4 border-t border-white/15 pt-4">
             <div>
-              <p className="text-xs text-primary-foreground/70">Income</p>
+              <p className="text-xs text-white/70">Income</p>
               <p className="mt-0.5 font-semibold tabular-nums">{formatCurrency(income, settings?.currency)}</p>
             </div>
             <div>
-              <p className="text-xs text-primary-foreground/70">Expenses</p>
+              <p className="text-xs text-white/70">Expenses</p>
               <p className="mt-0.5 font-semibold tabular-nums">{formatCurrency(expense, settings?.currency)}</p>
             </div>
           </div>
-          <div className="mt-3 rounded-xl bg-primary-foreground/10 px-3 py-2">
-            <p className="text-xs text-primary-foreground/70">Remaining this month</p>
+          <div className="mt-3 rounded-xl bg-white/10 px-3 py-2">
+            <p className="text-xs text-white/70">Remaining this month</p>
             <p className="font-semibold tabular-nums">{formatCurrency(remaining, settings?.currency)}</p>
           </div>
         </CardContent>
