@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
@@ -13,7 +13,22 @@ interface SheetProps {
   className?: string
 }
 
+// Matches the sheet-out animation duration below, so the panel finishes sliding away before unmount.
+const CLOSE_ANIMATION_MS = 220
+
 export function Sheet({ open, onClose, title, children, className }: SheetProps) {
+  const [rendered, setRendered] = useState(open)
+
+  useEffect(() => {
+    if (open) {
+      setRendered(true)
+      return
+    }
+    if (!rendered) return
+    const timer = setTimeout(() => setRendered(false), CLOSE_ANIMATION_MS)
+    return () => clearTimeout(timer)
+  }, [open, rendered])
+
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => {
@@ -28,18 +43,23 @@ export function Sheet({ open, onClose, title, children, className }: SheetProps)
     }
   }, [open, onClose])
 
-  if (!open) return null
+  if (!rendered) return null
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
-      <div className="absolute inset-0 animate-fade-in bg-black/50" onClick={onClose} aria-hidden="true" />
+      <div
+        className={cn('absolute inset-0 bg-black/50', open ? 'animate-fade-in' : 'animate-fade-out')}
+        onClick={onClose}
+        aria-hidden="true"
+      />
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
         className={cn(
           GLASS_STRONG,
-          'relative z-10 max-h-[92dvh] w-full touch-pan-y animate-sheet-in overflow-y-auto rounded-t-3xl p-5 shadow-2xl safe-bottom sm:max-w-md sm:rounded-3xl',
+          'relative z-10 max-h-[92dvh] w-full touch-pan-y overflow-y-auto rounded-t-3xl p-5 shadow-2xl safe-bottom sm:max-w-md sm:rounded-3xl',
+          open ? 'animate-sheet-in' : 'animate-sheet-out',
           className,
         )}
       >

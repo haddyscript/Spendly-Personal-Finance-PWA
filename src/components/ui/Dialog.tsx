@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { cn } from '@/lib/cn'
@@ -12,7 +12,22 @@ interface DialogProps {
   labelledBy?: string
 }
 
+// Matches the dialog-out animation duration below, so the panel finishes fading before unmount.
+const CLOSE_ANIMATION_MS = 150
+
 export function Dialog({ open, onClose, children, className, labelledBy }: DialogProps) {
+  const [rendered, setRendered] = useState(open)
+
+  useEffect(() => {
+    if (open) {
+      setRendered(true)
+      return
+    }
+    if (!rendered) return
+    const timer = setTimeout(() => setRendered(false), CLOSE_ANIMATION_MS)
+    return () => clearTimeout(timer)
+  }, [open, rendered])
+
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => {
@@ -27,18 +42,23 @@ export function Dialog({ open, onClose, children, className, labelledBy }: Dialo
     }
   }, [open, onClose])
 
-  if (!open) return null
+  if (!rendered) return null
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 animate-fade-in bg-black/50" onClick={onClose} aria-hidden="true" />
+      <div
+        className={cn('absolute inset-0 bg-black/50', open ? 'animate-fade-in' : 'animate-fade-out')}
+        onClick={onClose}
+        aria-hidden="true"
+      />
       <div
         role="alertdialog"
         aria-modal="true"
         aria-labelledby={labelledBy}
         className={cn(
           GLASS_STRONG,
-          'relative z-10 w-full max-w-sm animate-dialog-in rounded-2xl p-5 shadow-2xl',
+          'relative z-10 w-full max-w-sm rounded-2xl p-5 shadow-2xl',
+          open ? 'animate-dialog-in' : 'animate-dialog-out',
           className,
         )}
       >
