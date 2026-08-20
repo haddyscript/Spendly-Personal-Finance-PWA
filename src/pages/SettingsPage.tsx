@@ -45,6 +45,15 @@ const THEME_OPTIONS: { value: ThemeMode; label: string; icon: typeof Sun }[] = [
 
 const ROW_CLASS = 'flex w-full items-center gap-3 p-4 text-left transition-colors active:bg-secondary hover:bg-secondary/60'
 
+/** iOS Settings–style colored icon badge, so each row reads at a glance instead of relying on plain gray glyphs. */
+function IconBadge({ icon: Icon, className }: { icon: typeof Sun; className?: string }) {
+  return (
+    <span className={cn('flex h-7 w-7 shrink-0 items-center justify-center rounded-[7px] text-white', className)}>
+      <Icon className="h-4 w-4" aria-hidden="true" />
+    </span>
+  )
+}
+
 export default function SettingsPage() {
   const { settings } = useSettings()
   const { success, error, toast } = useToast()
@@ -146,13 +155,15 @@ export default function SettingsPage() {
     <div className="flex flex-col gap-6 pb-6 pt-6 safe-top">
       <PageHeader title="Settings" />
 
-      <div className="flex items-center gap-3 px-5">
-        <Logo />
-        <div>
-          <p className="font-semibold">Spendly</p>
-          <p className="text-xs text-muted-foreground">Know where your money goes.</p>
-        </div>
-      </div>
+      <section className="px-5">
+        <Card className="flex items-center gap-3 p-4">
+          <Logo />
+          <div>
+            <p className="font-semibold">Spendly</p>
+            <p className="text-xs text-muted-foreground">Know where your money goes.</p>
+          </div>
+        </Card>
+      </section>
 
       <section className="px-5">
         <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Your Data</h2>
@@ -185,7 +196,7 @@ export default function SettingsPage() {
         <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Currency</h2>
         <Card>
           <button type="button" onClick={() => setCurrencySheetOpen(true)} className={cn(ROW_CLASS, 'rounded-2xl')}>
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-base font-semibold">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[7px] bg-emerald-500 text-sm font-semibold text-white">
               {CURRENCY_INFO[currency].symbol}
             </span>
             <div className="min-w-0 flex-1">
@@ -200,8 +211,8 @@ export default function SettingsPage() {
       <section className="px-5">
         <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Organize</h2>
         <Card className="divide-y divide-border overflow-hidden">
-          <SettingsRow to="/settings/categories" icon={Shapes} label="Categories" />
-          <SettingsRow to="/settings/recurring" icon={Repeat} label="Recurring Transactions" />
+          <SettingsRow to="/settings/categories" icon={Shapes} iconBg="bg-orange-500" label="Categories" />
+          <SettingsRow to="/settings/recurring" icon={Repeat} iconBg="bg-violet-500" label="Recurring Transactions" />
         </Card>
       </section>
 
@@ -209,18 +220,18 @@ export default function SettingsPage() {
         <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Data</h2>
         <Card className="divide-y divide-border overflow-hidden">
           <button type="button" onClick={handleExport} className={ROW_CLASS}>
-            <Download className="h-5 w-5 text-muted-foreground" />
+            <IconBadge icon={Download} className="bg-blue-500" />
             <span className="flex-1 text-[15px] font-medium">Export Data</span>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
           <button type="button" onClick={handleImportClick} className={ROW_CLASS}>
-            <Upload className="h-5 w-5 text-muted-foreground" />
+            <IconBadge icon={Upload} className="bg-sky-500" />
             <span className="flex-1 text-[15px] font-medium">Import Data</span>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
           <input ref={fileInputRef} type="file" accept="application/json" className="hidden" onChange={handleFileSelected} />
           <button type="button" onClick={handleLoadDemoData} className={ROW_CLASS}>
-            <Sparkles className="h-5 w-5 text-muted-foreground" />
+            <IconBadge icon={Sparkles} className="bg-pink-500" />
             <span className="flex-1 text-[15px] font-medium">Load Demo Data</span>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
@@ -235,7 +246,7 @@ export default function SettingsPage() {
             onClick={() => setClearConfirmOpen(true)}
             className={cn(ROW_CLASS, 'rounded-2xl text-destructive active:bg-destructive/10 hover:bg-destructive/10')}
           >
-            <Trash2 className="h-5 w-5" />
+            <IconBadge icon={Trash2} className="bg-destructive" />
             <div className="flex-1">
               <p className="text-[15px] font-medium">Clear All Data</p>
               <p className="text-xs text-destructive/70">Permanently erase everything on this device</p>
@@ -249,7 +260,7 @@ export default function SettingsPage() {
         <Card>
           {isNotificationSupported() ? (
             <div className={cn(ROW_CLASS, 'rounded-2xl')}>
-              <Bell className="h-5 w-5 text-muted-foreground" />
+              <IconBadge icon={Bell} className="bg-red-500" />
               <div className="flex-1">
                 <p className="text-[15px] font-medium">Budget & Recurring Alerts</p>
                 <p className="text-xs text-muted-foreground">
@@ -278,7 +289,7 @@ export default function SettingsPage() {
             </div>
           ) : (
             <div className="flex items-center gap-3 p-4">
-              <Bell className="h-5 w-5 text-muted-foreground" />
+              <IconBadge icon={Bell} className="bg-red-500" />
               <div className="flex-1">
                 <p className="text-[15px] font-medium">Budget & Recurring Alerts</p>
                 <p className="text-xs text-muted-foreground">Not supported in this browser</p>
@@ -292,7 +303,7 @@ export default function SettingsPage() {
         <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Security</h2>
         <Card>
           <button type="button" onClick={handleSecurityClick} className={cn(ROW_CLASS, 'rounded-2xl')}>
-            <Fingerprint className="h-5 w-5 text-muted-foreground" />
+            <IconBadge icon={Fingerprint} className="bg-zinc-700" />
             <div className="flex-1">
               <p className="text-[15px] font-medium">Biometric &amp; PIN Lock</p>
               <p className="text-xs text-muted-foreground">Coming soon</p>
@@ -306,25 +317,25 @@ export default function SettingsPage() {
         <Card className="divide-y divide-border overflow-hidden">
           {installed ? (
             <div className="flex items-center gap-3 p-4">
-              <CheckCircle2 className="h-5 w-5 text-success" />
+              <IconBadge icon={CheckCircle2} className="bg-success" />
               <span className="flex-1 text-[15px] font-medium">Spendly is installed</span>
             </div>
           ) : canPromptAndroid || isIosSafari ? (
             <button type="button" onClick={handleInstallClick} className={ROW_CLASS}>
-              <Download className="h-5 w-5 text-muted-foreground" />
+              <IconBadge icon={Download} className="bg-blue-500" />
               <span className="flex-1 text-[15px] font-medium">Install App</span>
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </button>
           ) : (
             <div className="flex items-center gap-3 p-4">
-              <Download className="h-5 w-5 text-muted-foreground" />
+              <IconBadge icon={Download} className="bg-blue-500" />
               <div className="flex-1">
                 <p className="text-[15px] font-medium">Install App</p>
                 <p className="text-xs text-muted-foreground">Available in Chrome, Edge, or Safari on iPhone</p>
               </div>
             </div>
           )}
-          <SettingsRow to="/welcome" icon={Sparkles} label="Welcome Screen" />
+          <SettingsRow to="/welcome" icon={Sparkles} iconBg="bg-indigo-500" label="Welcome Screen" />
         </Card>
       </section>
 
@@ -362,10 +373,20 @@ export default function SettingsPage() {
   )
 }
 
-function SettingsRow({ to, icon: Icon, label }: { to: string; icon: typeof Shapes; label: string }) {
+function SettingsRow({
+  to,
+  icon,
+  iconBg,
+  label,
+}: {
+  to: string
+  icon: typeof Shapes
+  iconBg: string
+  label: string
+}) {
   return (
     <Link to={to} className={ROW_CLASS}>
-      <Icon className="h-5 w-5 text-muted-foreground" />
+      <IconBadge icon={icon} className={iconBg} />
       <span className="flex-1 text-[15px] font-medium">{label}</span>
       <ChevronRight className="h-4 w-4 text-muted-foreground" />
     </Link>
