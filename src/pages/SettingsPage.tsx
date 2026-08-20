@@ -3,14 +3,13 @@ import type { ChangeEvent } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Bell,
+  Check,
   CheckCircle2,
   ChevronRight,
   Download,
   Fingerprint,
-  Moon,
   Repeat,
   Shapes,
-  Smartphone,
   Sparkles,
   Sun,
   Trash2,
@@ -35,13 +34,7 @@ import { clearAllData, downloadExport, exportAllData, importData } from '@/servi
 import { seedDemoData } from '@/db/seed'
 import { CURRENCY_INFO } from '@/lib/currency'
 import { cn } from '@/lib/cn'
-import type { ThemeMode, CurrencyCode } from '@/types/models'
-
-const THEME_OPTIONS: { value: ThemeMode; label: string; icon: typeof Sun }[] = [
-  { value: 'system', label: 'System', icon: Smartphone },
-  { value: 'light', label: 'Light', icon: Sun },
-  { value: 'dark', label: 'Dark', icon: Moon },
-]
+import type { CurrencyCode } from '@/types/models'
 
 const ROW_CLASS = 'flex w-full items-center gap-3 p-4 text-left transition-colors active:bg-secondary hover:bg-secondary/60'
 
@@ -50,6 +43,23 @@ function IconBadge({ icon: Icon, className }: { icon: typeof Sun; className?: st
   return (
     <span className={cn('flex h-7 w-7 shrink-0 items-center justify-center rounded-[7px] text-white', className)}>
       <Icon className="h-4 w-4" aria-hidden="true" />
+    </span>
+  )
+}
+
+function Switch({ checked, onChange, label }: { checked: boolean; onChange: (next: boolean) => void; label: string }) {
+  return (
+    <span
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      onClick={() => onChange(!checked)}
+      className={cn(
+        'flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors',
+        checked ? 'bg-primary' : 'bg-secondary',
+      )}
+    >
+      <span className={cn('h-5 w-5 rounded-full bg-card shadow transition-transform', checked && 'translate-x-4')} />
     </span>
   )
 }
@@ -142,6 +152,15 @@ export default function SettingsPage() {
     await updateSettings({ notificationsEnabled: next })
   }
 
+  async function handleAutomaticToggle(next: boolean) {
+    if (next) {
+      await updateSettings({ theme: 'system' })
+    } else {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      await updateSettings({ theme: prefersDark ? 'dark' : 'light' })
+    }
+  }
+
   function handleSecurityClick() {
     toast({
       title: 'Biometric & PIN lock — coming soon',
@@ -173,21 +192,44 @@ export default function SettingsPage() {
       <section className="px-5">
         <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Appearance</h2>
         <Card>
-          <div className="grid grid-cols-3 gap-2 p-2">
-            {THEME_OPTIONS.map(({ value, label, icon: Icon }) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => updateSettings({ theme: value })}
-                className={cn(
-                  'flex flex-col items-center gap-1.5 rounded-xl py-3 text-xs font-medium transition-all active:scale-95',
-                  settings?.theme === value ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:bg-secondary',
-                )}
-              >
-                <Icon className="h-5 w-5" />
-                {label}
-              </button>
-            ))}
+          <div className="flex gap-4 p-4">
+            {(['light', 'dark'] as const).map((mode) => {
+              const selected = settings?.theme === mode
+              return (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => updateSettings({ theme: mode })}
+                  className="flex flex-1 flex-col items-center gap-2"
+                >
+                  <div
+                    className={cn(
+                      'flex h-24 w-full flex-col gap-1.5 rounded-2xl border p-2.5 transition-shadow',
+                      mode === 'light' ? 'border-zinc-200 bg-zinc-50' : 'border-zinc-800 bg-zinc-900',
+                      selected && 'ring-2 ring-violet-500 ring-offset-2 ring-offset-card',
+                    )}
+                  >
+                    <div className="h-7 w-full shrink-0 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-700" />
+                    <div className={cn('h-2 w-3/4 rounded-full', mode === 'light' ? 'bg-zinc-300' : 'bg-zinc-700')} />
+                    <div className={cn('h-2 w-1/2 rounded-full', mode === 'light' ? 'bg-zinc-300' : 'bg-zinc-700')} />
+                  </div>
+                  <span className="text-sm font-medium capitalize">{mode}</span>
+                  <span
+                    className={cn(
+                      'flex h-5 w-5 items-center justify-center rounded-full border-2',
+                      selected ? 'border-violet-600 bg-violet-600' : 'border-border',
+                    )}
+                  >
+                    {selected && <Check className="h-3 w-3 text-white" strokeWidth={3} aria-hidden="true" />}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+
+          <div className="flex items-center gap-3 border-t border-border p-4">
+            <span className="flex-1 text-[15px] font-medium">Automatic</span>
+            <Switch checked={settings?.theme === 'system'} onChange={handleAutomaticToggle} label="Automatic appearance" />
           </div>
         </Card>
       </section>
@@ -269,23 +311,11 @@ export default function SettingsPage() {
                     : 'Local only — nothing leaves your device'}
                 </p>
               </div>
-              <span
-                role="switch"
-                aria-checked={!!settings?.notificationsEnabled}
-                aria-label="Toggle notifications"
-                onClick={() => handleNotificationsToggle(!settings?.notificationsEnabled)}
-                className={cn(
-                  'flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors',
-                  settings?.notificationsEnabled ? 'bg-primary' : 'bg-secondary',
-                )}
-              >
-                <span
-                  className={cn(
-                    'h-5 w-5 rounded-full bg-card shadow transition-transform',
-                    settings?.notificationsEnabled && 'translate-x-4',
-                  )}
-                />
-              </span>
+              <Switch
+                checked={!!settings?.notificationsEnabled}
+                onChange={handleNotificationsToggle}
+                label="Toggle notifications"
+              />
             </div>
           ) : (
             <div className="flex items-center gap-3 p-4">
