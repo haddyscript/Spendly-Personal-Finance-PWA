@@ -2,10 +2,22 @@ import type { Category } from '@/types/models'
 
 const now = () => new Date().toISOString()
 
+/** Split out from Transportation so it can also be added retroactively via a db migration. */
+export const MOTORCYCLE_CATEGORY: Category = {
+  id: 'cat-motorcycle',
+  name: 'Motorcycle',
+  type: 'expense',
+  icon: 'Motorbike',
+  color: '#d97706',
+  isDefault: true,
+  createdAt: now(),
+}
+
 /** Fixed ids so seeding is idempotent and demo data can reference categories predictably. */
 export const DEFAULT_EXPENSE_CATEGORIES: Category[] = [
   { id: 'cat-food', name: 'Food', type: 'expense', icon: 'Utensils', color: '#f97316', isDefault: true, createdAt: now() },
   { id: 'cat-transportation', name: 'Transportation', type: 'expense', icon: 'Car', color: '#3b82f6', isDefault: true, createdAt: now() },
+  MOTORCYCLE_CATEGORY,
   { id: 'cat-shopping', name: 'Shopping', type: 'expense', icon: 'ShoppingBag', color: '#ec4899', isDefault: true, createdAt: now() },
   { id: 'cat-bills', name: 'Bills', type: 'expense', icon: 'Receipt', color: '#64748b', isDefault: true, createdAt: now() },
   { id: 'cat-entertainment', name: 'Entertainment', type: 'expense', icon: 'Film', color: '#a855f7', isDefault: true, createdAt: now() },

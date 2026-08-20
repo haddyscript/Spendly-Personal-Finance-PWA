@@ -1,6 +1,6 @@
 import Dexie, { type EntityTable } from 'dexie'
 import type { AppSettings, Budget, Category, Goal, RecurringTransaction, Transaction } from '@/types/models'
-import { DEFAULT_CATEGORIES } from '@/db/defaultCategories'
+import { DEFAULT_CATEGORIES, MOTORCYCLE_CATEGORY } from '@/db/defaultCategories'
 
 export class SpendlyDB extends Dexie {
   transactions!: EntityTable<Transaction, 'id'>
@@ -78,6 +78,25 @@ export class SpendlyDB extends Dexie {
           .modify((t) => {
             delete t.settledAt
           })
+      })
+
+    // v5: adds a dedicated Motorcycle expense category, split out from the general
+    // Transportation category. populateDefaults() already covers brand-new installs via
+    // DEFAULT_EXPENSE_CATEGORIES — this upgrade backfills it for databases created before it existed.
+    this.version(5)
+      .stores({
+        transactions: 'id, type, categoryId, date, paymentMethod, recurringId, [type+date]',
+        categories: 'id, type',
+        budgets: 'id, month, categoryId, [month+categoryId]',
+        goals: 'id, targetDate, completedAt, createdAt',
+        recurring: 'id, nextOccurrence',
+        settings: 'id',
+      })
+      .upgrade(async (tx) => {
+        const existing = await tx.table('categories').get(MOTORCYCLE_CATEGORY.id)
+        if (!existing) {
+          await tx.table('categories').add(MOTORCYCLE_CATEGORY)
+        }
       })
 
     this.on('populate', () => this.populateDefaults())

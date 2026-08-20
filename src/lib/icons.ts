@@ -1,6 +1,7 @@
 import {
   Utensils,
   Car,
+  Motorbike,
   ShoppingBag,
   Receipt,
   Film,
@@ -37,6 +38,7 @@ import {
 export const ICONS: Record<string, LucideIcon> = {
   Utensils,
   Car,
+  Motorbike,
   ShoppingBag,
   Receipt,
   Film,
