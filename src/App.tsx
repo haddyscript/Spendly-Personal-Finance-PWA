@@ -7,7 +7,7 @@ import { PwaUpdatePrompt } from '@/components/pwa/PwaUpdatePrompt'
 import { useSettings } from '@/hooks/useSettings'
 import { useTheme } from '@/hooks/useTheme'
 import { processDueRecurring } from '@/services/recurringService'
-import { notify } from '@/services/notificationService'
+import { isNotificationSupported, notify, requestNotificationPermission } from '@/services/notificationService'
 import { checkLogReminder } from '@/services/reminderService'
 
 const pageImports = {
@@ -118,6 +118,15 @@ export default function App() {
     const interval = setInterval(checkLogReminder, 30 * 60 * 1000)
     return () => clearInterval(interval)
   }, [])
+
+  // Notifications are on by default, so prompt for OS permission once onboarding is done
+  // rather than leaving the Settings toggle silently inert until someone finds and taps it.
+  useEffect(() => {
+    if (!settings?.hasOnboarded || !settings.notificationsEnabled) return
+    if (isNotificationSupported() && Notification.permission === 'default') {
+      requestNotificationPermission()
+    }
+  }, [settings?.hasOnboarded, settings?.notificationsEnabled])
 
   if (isLoading || !settings || !splashMinElapsed) {
     return <Splash />

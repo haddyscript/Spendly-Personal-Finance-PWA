@@ -8,7 +8,7 @@ const DEFAULTS: AppSettings = {
   hasOnboarded: false,
   securityLock: 'none',
   installPromptDismissedAt: null,
-  notificationsEnabled: false,
+  notificationsEnabled: true,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 }
