@@ -8,6 +8,7 @@ import { useSettings } from '@/hooks/useSettings'
 import { useTheme } from '@/hooks/useTheme'
 import { processDueRecurring } from '@/services/recurringService'
 import { notify } from '@/services/notificationService'
+import { checkLogReminder } from '@/services/reminderService'
 
 const pageImports = {
   home: () => import('@/pages/HomePage'),
@@ -100,6 +101,14 @@ export default function App() {
         tag: 'recurring-due',
       })
     })
+  }, [])
+
+  useEffect(() => {
+    checkLogReminder()
+    // Re-checks periodically in case the PWA is left open in a background tab for hours,
+    // since there's no reliable way to wake it up once the app is fully closed.
+    const interval = setInterval(checkLogReminder, 30 * 60 * 1000)
+    return () => clearInterval(interval)
   }, [])
 
   if (isLoading || !settings || !splashMinElapsed) {
