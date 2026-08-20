@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Plus, Target } from 'lucide-react'
+import { useSearchParams } from 'react-router-dom'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { BackButton } from '@/components/layout/BackButton'
 import { Button } from '@/components/ui/Button'
@@ -20,6 +21,26 @@ export default function GoalsPage() {
   const [contributing, setContributing] = useState<Goal | null>(null)
   const [deleting, setDeleting] = useState<Goal | null>(null)
   const { success } = useToast()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // Landing spot for the "Add Goal Contribution" home-screen app shortcut. Waits for goals to
+  // load so it can tell whether there's exactly one open goal to jump straight into — with more
+  // than one, there's no way to know which the shortcut meant, so it just lands on the list.
+  useEffect(() => {
+    if (searchParams.get('action') !== 'contribute' || isLoading) return
+    const openGoals = goals.filter((g) => g.completedAt === null)
+    if (openGoals.length === 1) {
+      const goal = openGoals[0]
+      setTimeout(() => setContributing(goal), 0)
+    }
+    setSearchParams(
+      (params) => {
+        params.delete('action')
+        return params
+      },
+      { replace: true },
+    )
+  }, [isLoading])
 
   async function handleDelete() {
     if (!deleting) return

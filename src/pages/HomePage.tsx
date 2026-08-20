@@ -24,8 +24,8 @@ import { useGoals } from '@/hooks/useGoals'
 import { useSettings } from '@/hooks/useSettings'
 import { formatCurrency } from '@/utils/money'
 import { monthKeyToLabel, toMonthKey } from '@/utils/date'
-import { useState } from 'react'
-import { useOutletContext } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useOutletContext, useSearchParams } from 'react-router-dom'
 import type { Transaction } from '@/types/models'
 import type { AppShellContext } from '@/components/layout/AppShell'
 
@@ -42,6 +42,21 @@ export default function HomePage() {
   const [editing, setEditing] = useState<Transaction | null>(null)
   const [creditSheetOpen, setCreditSheetOpen] = useState(false)
   const { openAddTransaction } = useOutletContext<AppShellContext>()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // Landing spot for the "Add Expense"/"Add Income" home-screen app shortcuts.
+  useEffect(() => {
+    const action = searchParams.get('action')
+    if (action !== 'add-expense' && action !== 'add-income') return
+    openAddTransaction(action === 'add-expense' ? 'expense' : 'income')
+    setSearchParams(
+      (params) => {
+        params.delete('action')
+        return params
+      },
+      { replace: true },
+    )
+  }, [])
 
   const isLoading = balanceLoading || summaryLoading
 

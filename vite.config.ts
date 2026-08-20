@@ -31,6 +31,36 @@ export default defineConfig({
           { src: 'icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
         categories: ['finance', 'productivity'],
+        shortcuts: [
+          {
+            name: 'Add Expense',
+            short_name: 'Add Expense',
+            description: 'Log a new expense',
+            url: '/?action=add-expense',
+            icons: [{ src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' }],
+          },
+          {
+            name: 'Add Income',
+            short_name: 'Add Income',
+            description: 'Log a new income',
+            url: '/?action=add-income',
+            icons: [{ src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' }],
+          },
+          {
+            name: 'View Analytics',
+            short_name: 'Analytics',
+            description: 'See your spending patterns',
+            url: '/analytics',
+            icons: [{ src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' }],
+          },
+          {
+            name: 'Add Goal Contribution',
+            short_name: 'Goal Funds',
+            description: 'Add funds to a savings goal',
+            url: '/goals?action=contribute',
+            icons: [{ src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' }],
+          },
+        ],
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],

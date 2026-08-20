@@ -3,15 +3,22 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { OfflineBanner } from '@/components/pwa/OfflineBanner'
 import { TransactionFormSheet } from '@/components/transactions/TransactionFormSheet'
+import type { TransactionType } from '@/types/models'
 
 export interface AppShellContext {
-  openAddTransaction: () => void
+  openAddTransaction: (type?: TransactionType) => void
 }
 
 export function AppShell() {
   const [addOpen, setAddOpen] = useState(false)
+  const [addType, setAddType] = useState<TransactionType>('expense')
   const location = useLocation()
-  const context: AppShellContext = { openAddTransaction: () => setAddOpen(true) }
+  const context: AppShellContext = {
+    openAddTransaction: (type = 'expense') => {
+      setAddType(type)
+      setAddOpen(true)
+    },
+  }
 
   return (
     <div className="relative mx-auto flex min-h-dvh max-w-lg flex-col bg-background">
@@ -28,7 +35,7 @@ export function AppShell() {
         </div>
       </main>
       <BottomNav onAddClick={() => setAddOpen(true)} />
-      <TransactionFormSheet open={addOpen} onClose={() => setAddOpen(false)} />
+      <TransactionFormSheet open={addOpen} onClose={() => setAddOpen(false)} defaultType={addType} />
     </div>
   )
 }
