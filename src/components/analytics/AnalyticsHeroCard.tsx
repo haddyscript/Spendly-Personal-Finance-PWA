@@ -22,9 +22,9 @@ export function AnalyticsHeroCard({ month, expenseMinor, trend }: AnalyticsHeroC
         : 'bg-secondary text-muted-foreground'
 
   return (
-    <Card className="border-none bg-primary text-primary-foreground shadow-sm">
+    <Card className="border-none bg-gradient-to-br from-violet-600 to-indigo-700 text-white shadow-sm">
       <CardContent className="p-5">
-        <p className="text-sm text-primary-foreground/70">Total Spent · {monthKeyToLabel(month)}</p>
+        <p className="text-sm text-white/70">Total Spent · {monthKeyToLabel(month)}</p>
         <p className="mt-1 text-4xl font-bold tabular-nums">{formatCurrency(expenseMinor, settings?.currency)}</p>
 
         <div className="mt-4 flex items-center gap-2 text-xs">
@@ -32,7 +32,7 @@ export function AnalyticsHeroCard({ month, expenseMinor, trend }: AnalyticsHeroC
             <Icon className="h-3.5 w-3.5" aria-hidden="true" />
             {trend.direction === 'stable' ? 'About the same' : `${trend.percentage.toFixed(1)}% ${trend.direction === 'down' ? 'less' : 'more'}`}
           </span>
-          <span className="text-primary-foreground/60">vs last month</span>
+          <span className="text-white/60">vs last month</span>
         </div>
       </CardContent>
     </Card>
