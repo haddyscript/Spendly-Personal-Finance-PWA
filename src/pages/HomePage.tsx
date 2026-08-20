@@ -147,7 +147,7 @@ export default function HomePage() {
             title="No transactions yet"
             description="Start tracking your spending by adding your first transaction."
             action={
-              <Button onClick={openAddTransaction}>
+              <Button onClick={() => openAddTransaction()}>
                 <Plus className="h-4 w-4" /> Add Transaction
               </Button>
             }

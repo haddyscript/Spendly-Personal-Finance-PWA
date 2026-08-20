@@ -137,7 +137,7 @@ export default function TransactionsPage() {
               icon={Receipt}
               title="No transactions yet"
               description="Start tracking your spending by adding your first transaction."
-              action={<Button onClick={openAddTransaction}>Add Transaction</Button>}
+              action={<Button onClick={() => openAddTransaction()}>Add Transaction</Button>}
             />
           )
         ) : (
