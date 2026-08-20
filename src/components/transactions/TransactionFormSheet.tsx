@@ -10,6 +10,7 @@ import { useSettings } from '@/hooks/useSettings'
 import { useToast } from '@/hooks/useToast'
 import { addTransaction, deleteTransaction, notifyTransactionAdded, updateTransaction } from '@/services/transactionService'
 import { checkBudgetAlerts } from '@/services/budgetService'
+import { checkStreakMilestone } from '@/services/streakService'
 import { fromMinorUnits, toMinorUnits } from '@/utils/money'
 import { toDateKey } from '@/utils/date'
 import { PAYMENT_METHODS } from '@/types/models'
@@ -101,7 +102,10 @@ function TransactionForm({ transaction, defaultType, onClose }: TransactionFormP
         })
         success('Transaction added')
         void notifyTransactionAdded(created)
-        if (type === 'expense') void checkBudgetAlerts(date.slice(0, 7), effectiveCategoryId)
+        if (type === 'expense') {
+          void checkBudgetAlerts(date.slice(0, 7), effectiveCategoryId)
+          void checkStreakMilestone()
+        }
       }
       onClose()
     } catch {

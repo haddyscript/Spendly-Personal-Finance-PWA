@@ -1,5 +1,6 @@
 import { db } from '@/db/db'
 import { notify } from '@/services/notificationService'
+import { getSpendingStreak } from '@/services/streakService'
 
 const REMINDER_HOURS = 5
 const REMINDER_MS = REMINDER_HOURS * 60 * 60 * 1000
@@ -25,6 +26,16 @@ export async function checkLogReminder(): Promise<void> {
 
   localStorage.setItem(LAST_REMINDER_KEY, String(now))
   const hours = Math.floor((now - anchor) / (60 * 60 * 1000))
+
+  const { current, loggedToday } = await getSpendingStreak()
+  if (current > 0 && !loggedToday) {
+    await notify(`Keep your ${current}-day streak going`, {
+      body: "Log an expense today so your streak doesn't reset.",
+      tag: 'log-reminder',
+    })
+    return
+  }
+
   await notify('Log your expenses', {
     body: `It's been ${hours} hour${hours === 1 ? '' : 's'} since your last transaction.`,
     tag: 'log-reminder',

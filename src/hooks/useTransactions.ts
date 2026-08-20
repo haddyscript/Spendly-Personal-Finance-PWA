@@ -2,6 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@/db/db'
 import { CREDIT_PAYMENT_METHODS } from '@/types/models'
 import type { PaymentMethod, TransactionType } from '@/types/models'
+import { getSpendingStreak } from '@/services/streakService'
 
 export function useTransactions() {
   const transactions = useLiveQuery(() => db.transactions.orderBy('date').reverse().toArray(), [])
@@ -28,6 +29,15 @@ export function useRecentlySettledCredit(limit: number) {
       .slice(0, limit)
   }, [limit])
   return { transactions: transactions ?? [], isLoading: transactions === undefined }
+}
+
+export function useSpendingStreak() {
+  const streak = useLiveQuery(() => getSpendingStreak(), [])
+  return {
+    current: streak?.current ?? 0,
+    loggedToday: streak?.loggedToday ?? false,
+    isLoading: streak === undefined,
+  }
 }
 
 export function useRecentTransactions(limit: number) {
