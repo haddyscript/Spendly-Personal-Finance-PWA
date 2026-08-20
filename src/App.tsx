@@ -103,6 +103,14 @@ export default function App() {
     })
   }, [])
 
+  // Fires on every app open, unlike the other notifications below which are conditional.
+  useEffect(() => {
+    notify('Welcome back to Spendly', {
+      body: "Don't forget to log today's transactions.",
+      tag: 'app-open',
+    })
+  }, [])
+
   useEffect(() => {
     checkLogReminder()
     // Re-checks periodically in case the PWA is left open in a background tab for hours,
