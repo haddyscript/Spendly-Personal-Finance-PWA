@@ -1,7 +1,8 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { Link } from 'react-router-dom'
 import {
+  Bell,
   CheckCircle2,
   ChevronRight,
   Download,
@@ -25,6 +26,11 @@ import { useSettings } from '@/hooks/useSettings'
 import { useToast } from '@/hooks/useToast'
 import { useInstallPrompt } from '@/hooks/useInstallPrompt'
 import { updateSettings } from '@/services/settingsService'
+import {
+  getNotificationPermission,
+  isNotificationSupported,
+  requestNotificationPermission,
+} from '@/services/notificationService'
 import { clearAllData, downloadExport, exportAllData, importData } from '@/services/exportImportService'
 import { seedDemoData } from '@/db/seed'
 import { CURRENCY_INFO } from '@/lib/currency'
@@ -47,6 +53,11 @@ export default function SettingsPage() {
   const [clearConfirmOpen, setClearConfirmOpen] = useState(false)
   const [pendingImport, setPendingImport] = useState<unknown>(null)
   const [currencySheetOpen, setCurrencySheetOpen] = useState(false)
+  const [notificationPermission, setNotificationPermission] = useState(getNotificationPermission)
+  const mountedRef = useRef(true)
+  useEffect(() => () => {
+    mountedRef.current = false
+  }, [])
 
   async function handleExport() {
     const data = await exportAllData()
@@ -102,6 +113,24 @@ export default function SettingsPage() {
     } else if (isIosSafari) {
       toast({ title: 'Install Spendly', description: 'Tap the Share icon, then "Add to Home Screen".' })
     }
+  }
+
+  async function handleNotificationsToggle(next: boolean) {
+    if (next) {
+      const permission = await requestNotificationPermission()
+      if (!mountedRef.current) return
+      setNotificationPermission(permission)
+      if (permission !== 'granted') {
+        if (permission === 'denied') {
+          toast({
+            title: "Notifications blocked",
+            description: 'Enable them for Spendly in your browser or phone settings, then try again.',
+          })
+        }
+        return
+      }
+    }
+    await updateSettings({ notificationsEnabled: next })
   }
 
   function handleSecurityClick() {
@@ -212,6 +241,50 @@ export default function SettingsPage() {
               <p className="text-xs text-destructive/70">Permanently erase everything on this device</p>
             </div>
           </button>
+        </Card>
+      </section>
+
+      <section className="px-5">
+        <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Notifications</h2>
+        <Card>
+          {isNotificationSupported() ? (
+            <div className={cn(ROW_CLASS, 'rounded-2xl')}>
+              <Bell className="h-5 w-5 text-muted-foreground" />
+              <div className="flex-1">
+                <p className="text-[15px] font-medium">Budget & Recurring Alerts</p>
+                <p className="text-xs text-muted-foreground">
+                  {notificationPermission === 'denied'
+                    ? 'Blocked in browser settings'
+                    : 'Local only — nothing leaves your device'}
+                </p>
+              </div>
+              <span
+                role="switch"
+                aria-checked={!!settings?.notificationsEnabled}
+                aria-label="Toggle notifications"
+                onClick={() => handleNotificationsToggle(!settings?.notificationsEnabled)}
+                className={cn(
+                  'flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors',
+                  settings?.notificationsEnabled ? 'bg-primary' : 'bg-secondary',
+                )}
+              >
+                <span
+                  className={cn(
+                    'h-5 w-5 rounded-full bg-card shadow transition-transform',
+                    settings?.notificationsEnabled && 'translate-x-4',
+                  )}
+                />
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3 p-4">
+              <Bell className="h-5 w-5 text-muted-foreground" />
+              <div className="flex-1">
+                <p className="text-[15px] font-medium">Budget & Recurring Alerts</p>
+                <p className="text-xs text-muted-foreground">Not supported in this browser</p>
+              </div>
+            </div>
+          )}
         </Card>
       </section>
 

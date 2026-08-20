@@ -93,6 +93,7 @@ export class SpendlyDB extends Dexie {
       hasOnboarded: false,
       securityLock: 'none',
       installPromptDismissedAt: null,
+      notificationsEnabled: false,
       createdAt: now,
       updatedAt: now,
     })

@@ -101,6 +101,7 @@ export async function clearAllData(): Promise<void> {
         hasOnboarded: true,
         securityLock: 'none',
         installPromptDismissedAt: null,
+        notificationsEnabled: false,
         createdAt: now,
         updatedAt: now,
       })

@@ -115,6 +115,8 @@ export interface AppSettings {
   hasOnboarded: boolean
   securityLock: SecurityLockMode
   installPromptDismissedAt: string | null
+  /** Opt-in flag for local notifications (budget alerts, recurring reminders). No backend involved. */
+  notificationsEnabled: boolean
   createdAt: string
   updatedAt: string
 }

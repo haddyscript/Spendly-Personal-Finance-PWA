@@ -7,6 +7,7 @@ import { PwaUpdatePrompt } from '@/components/pwa/PwaUpdatePrompt'
 import { useSettings } from '@/hooks/useSettings'
 import { useTheme } from '@/hooks/useTheme'
 import { processDueRecurring } from '@/services/recurringService'
+import { notify } from '@/services/notificationService'
 
 const pageImports = {
   home: () => import('@/pages/HomePage'),
@@ -92,7 +93,13 @@ export default function App() {
   usePrefetchPages()
 
   useEffect(() => {
-    processDueRecurring()
+    processDueRecurring().then((count) => {
+      if (count === 0) return
+      notify('Recurring transactions added', {
+        body: `${count} recurring transaction${count > 1 ? 's were' : ' was'} added to your history today.`,
+        tag: 'recurring-due',
+      })
+    })
   }, [])
 
   if (isLoading || !settings || !splashMinElapsed) {
