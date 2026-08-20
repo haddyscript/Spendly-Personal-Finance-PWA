@@ -45,12 +45,12 @@ function TabLink({ to, label, icon: Icon, end }: NavTab) {
           <span
             className={cn(
               'flex h-9 w-9 items-center justify-center rounded-full transition-colors',
-              isActive ? 'bg-orange-500 text-white' : 'text-zinc-400',
+              isActive ? 'bg-violet-500 text-white' : 'text-muted-foreground',
             )}
           >
             <Icon className="h-5 w-5" aria-hidden="true" />
           </span>
-          {isActive && <span className="text-[11px] font-medium text-orange-500">{label}</span>}
+          {isActive && <span className="text-[11px] font-medium text-violet-500">{label}</span>}
         </>
       )}
     </NavLink>
@@ -62,17 +62,17 @@ export function BottomNav({ onAddClick }: { onAddClick: () => void }) {
     <div className="pointer-events-none fixed inset-x-0 bottom-2 z-40 flex justify-center safe-bottom">
       <nav aria-label="Primary" className="pointer-events-auto relative w-full max-w-lg px-4">
         <div
-          className="relative drop-shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
+          className="relative drop-shadow-[0_8px_20px_rgba(0,0,0,0.25)]"
           style={{ height: BAR_VIEWBOX_HEIGHT }}
         >
-          <div className="absolute inset-0 overflow-hidden rounded-[32px] backdrop-blur-xl">
+          <div className="absolute inset-0 overflow-hidden rounded-[32px] backdrop-blur-[28px]">
             <svg
               className="absolute inset-0 h-full w-full"
               viewBox={`0 0 ${BAR_VIEWBOX_WIDTH} ${BAR_VIEWBOX_HEIGHT}`}
               preserveAspectRatio="none"
               aria-hidden="true"
             >
-              <path d={BAR_PATH} fill="rgba(20, 20, 23, 0.62)" />
+              <path d={BAR_PATH} className="fill-card/85 stroke-border/60" strokeWidth={1} />
             </svg>
           </div>
 
