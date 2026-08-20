@@ -1,17 +1,19 @@
 import { useState } from 'react'
-import { Check } from 'lucide-react'
+import { Check, Undo2 } from 'lucide-react'
 import { Sheet } from '@/components/ui/Sheet'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { CategoryIcon } from '@/components/categories/CategoryIcon'
-import { useOutstandingCredit } from '@/hooks/useTransactions'
+import { useOutstandingCredit, useRecentlySettledCredit } from '@/hooks/useTransactions'
 import { useCategoryMap } from '@/hooks/useCategories'
 import { useSettings } from '@/hooks/useSettings'
 import { useToast } from '@/hooks/useToast'
-import { markAllCreditSettled, markTransactionSettled } from '@/services/transactionService'
+import { markAllCreditSettled, markTransactionSettled, markTransactionUnsettled } from '@/services/transactionService'
 import { formatCurrency } from '@/utils/money'
 import { formatShortDate } from '@/utils/date'
 import { PAYMENT_METHOD_LABELS } from '@/lib/paymentMethods'
+
+const RECENTLY_PAID_LIMIT = 5
 
 export interface CreditDueSheetProps {
   open: boolean
@@ -20,6 +22,7 @@ export interface CreditDueSheetProps {
 
 export function CreditDueSheet({ open, onClose }: CreditDueSheetProps) {
   const { transactions, totalMinor, isLoading } = useOutstandingCredit()
+  const { transactions: recentlyPaid } = useRecentlySettledCredit(RECENTLY_PAID_LIMIT)
   const { categoryMap } = useCategoryMap()
   const { settings } = useSettings()
   const { success } = useToast()
@@ -36,28 +39,66 @@ export function CreditDueSheet({ open, onClose }: CreditDueSheetProps) {
     success('Marked as paid', formatCurrency(amountMinor, settings?.currency))
   }
 
+  async function handleUndoOne(id: string, amountMinor: number) {
+    await markTransactionUnsettled(id)
+    success('Marked as unpaid', formatCurrency(amountMinor, settings?.currency))
+  }
+
   return (
     <>
       <Sheet open={open} onClose={onClose} title="Credit to Pay">
-        {!isLoading && transactions.length === 0 ? (
-          <p className="py-6 text-center text-sm text-muted-foreground">You're all paid up.</p>
-        ) : (
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between rounded-2xl bg-secondary p-4">
-              <div>
-                <p className="text-xs text-muted-foreground">Total owed</p>
-                <p className="text-2xl font-bold tabular-nums">{formatCurrency(totalMinor, settings?.currency)}</p>
+        <div className="flex flex-col gap-4">
+          {!isLoading && transactions.length === 0 ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">You're all paid up.</p>
+          ) : (
+            <>
+              <div className="flex items-center justify-between rounded-2xl bg-secondary p-4">
+                <div>
+                  <p className="text-xs text-muted-foreground">Total owed</p>
+                  <p className="text-2xl font-bold tabular-nums">{formatCurrency(totalMinor, settings?.currency)}</p>
+                </div>
+                <Button type="button" size="sm" onClick={() => setConfirmAllOpen(true)}>
+                  Mark all as paid
+                </Button>
               </div>
-              <Button type="button" size="sm" onClick={() => setConfirmAllOpen(true)}>
-                Mark all as paid
-              </Button>
-            </div>
 
+              <div className="flex flex-col gap-2">
+                {transactions.map((t) => {
+                  const category = categoryMap.get(t.categoryId)
+                  return (
+                    <div key={t.id} className="flex items-center gap-3 rounded-2xl border border-border p-3">
+                      <CategoryIcon icon={category?.icon ?? 'MoreHorizontal'} color={category?.color ?? '#78716c'} size="sm" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[15px] font-medium">{t.description}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatShortDate(t.date)} · {PAYMENT_METHOD_LABELS[t.paymentMethod]}
+                        </p>
+                      </div>
+                      <span className="shrink-0 text-[15px] font-semibold tabular-nums">
+                        {formatCurrency(t.amountMinor, settings?.currency)}
+                      </span>
+                      <button
+                        type="button"
+                        aria-label={`Mark ${t.description} as paid`}
+                        onClick={() => handleMarkOne(t.id, t.amountMinor)}
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-input text-muted-foreground transition-colors hover:border-success hover:bg-success/10 hover:text-success"
+                      >
+                        <Check className="h-4 w-4" aria-hidden="true" />
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+            </>
+          )}
+
+          {recentlyPaid.length > 0 && (
             <div className="flex flex-col gap-2">
-              {transactions.map((t) => {
+              <h3 className="px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Recently paid</h3>
+              {recentlyPaid.map((t) => {
                 const category = categoryMap.get(t.categoryId)
                 return (
-                  <div key={t.id} className="flex items-center gap-3 rounded-2xl border border-border p-3">
+                  <div key={t.id} className="flex items-center gap-3 rounded-2xl border border-border p-3 opacity-70">
                     <CategoryIcon icon={category?.icon ?? 'MoreHorizontal'} color={category?.color ?? '#78716c'} size="sm" />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[15px] font-medium">{t.description}</p>
@@ -70,18 +111,18 @@ export function CreditDueSheet({ open, onClose }: CreditDueSheetProps) {
                     </span>
                     <button
                       type="button"
-                      aria-label={`Mark ${t.description} as paid`}
-                      onClick={() => handleMarkOne(t.id, t.amountMinor)}
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-input text-muted-foreground transition-colors hover:border-success hover:bg-success/10 hover:text-success"
+                      aria-label={`Mark ${t.description} as unpaid`}
+                      onClick={() => handleUndoOne(t.id, t.amountMinor)}
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-input text-muted-foreground transition-colors hover:border-warning hover:bg-warning/10 hover:text-warning"
                     >
-                      <Check className="h-4 w-4" aria-hidden="true" />
+                      <Undo2 className="h-4 w-4" aria-hidden="true" />
                     </button>
                   </div>
                 )
               })}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </Sheet>
 
       <ConfirmDialog

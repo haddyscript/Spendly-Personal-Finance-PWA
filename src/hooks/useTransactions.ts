@@ -19,6 +19,17 @@ export function useOutstandingCredit() {
   return { transactions: list, totalMinor, isLoading: transactions === undefined }
 }
 
+export function useRecentlySettledCredit(limit: number) {
+  const transactions = useLiveQuery(async () => {
+    const all = await db.transactions.orderBy('date').reverse().toArray()
+    return all
+      .filter((t) => t.type === 'expense' && CREDIT_PAYMENT_METHODS.includes(t.paymentMethod) && !!t.settledAt)
+      .sort((a, b) => (b.settledAt ?? '').localeCompare(a.settledAt ?? ''))
+      .slice(0, limit)
+  }, [limit])
+  return { transactions: transactions ?? [], isLoading: transactions === undefined }
+}
+
 export function useRecentTransactions(limit: number) {
   const transactions = useLiveQuery(async () => {
     const all = await db.transactions.orderBy('date').reverse().toArray()

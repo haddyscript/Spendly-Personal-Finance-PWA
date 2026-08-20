@@ -95,6 +95,10 @@ export async function markTransactionSettled(id: string): Promise<void> {
   await db.transactions.update(id, { settledAt: new Date().toISOString(), updatedAt: new Date().toISOString() })
 }
 
+export async function markTransactionUnsettled(id: string): Promise<void> {
+  await db.transactions.update(id, { settledAt: undefined, updatedAt: new Date().toISOString() })
+}
+
 export async function markAllCreditSettled(): Promise<void> {
   const outstanding = await getOutstandingCreditTransactions()
   const now = new Date().toISOString()
