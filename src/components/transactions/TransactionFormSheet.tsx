@@ -8,7 +8,7 @@ import { CategoryPicker } from '@/components/categories/CategoryPicker'
 import { useCategoriesByType } from '@/hooks/useCategories'
 import { useSettings } from '@/hooks/useSettings'
 import { useToast } from '@/hooks/useToast'
-import { addTransaction, deleteTransaction, updateTransaction } from '@/services/transactionService'
+import { addTransaction, deleteTransaction, notifyTransactionAdded, updateTransaction } from '@/services/transactionService'
 import { checkBudgetAlerts } from '@/services/budgetService'
 import { fromMinorUnits, toMinorUnits } from '@/utils/money'
 import { toDateKey } from '@/utils/date'
@@ -91,7 +91,7 @@ function TransactionForm({ transaction, defaultType, onClose }: TransactionFormP
         })
         success('Transaction updated')
       } else {
-        await addTransaction({
+        const created = await addTransaction({
           type,
           amountMinor,
           categoryId: effectiveCategoryId,
@@ -100,6 +100,7 @@ function TransactionForm({ transaction, defaultType, onClose }: TransactionFormP
           paymentMethod,
         })
         success('Transaction added')
+        void notifyTransactionAdded(created)
         if (type === 'expense') void checkBudgetAlerts(date.slice(0, 7), effectiveCategoryId)
       }
       onClose()

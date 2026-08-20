@@ -3,6 +3,10 @@ import { CREDIT_PAYMENT_METHODS } from '@/types/models'
 import type { PaymentMethod, Transaction, TransactionType } from '@/types/models'
 import { createId } from '@/utils/id'
 import { toDateKey } from '@/utils/date'
+import { getCategoryById } from '@/services/categoryService'
+import { getSettings } from '@/services/settingsService'
+import { notify } from '@/services/notificationService'
+import { formatCurrency } from '@/utils/money'
 
 export interface CreateTransactionInput {
   type: TransactionType
@@ -45,6 +49,22 @@ export async function addTransaction(input: CreateTransactionInput): Promise<Tra
   }
   await db.transactions.add(transaction)
   return transaction
+}
+
+/** Fire-and-forget confirmation notification after logging a transaction. Never throws. */
+export async function notifyTransactionAdded(transaction: Transaction): Promise<void> {
+  try {
+    const [category, settings] = await Promise.all([getCategoryById(transaction.categoryId), getSettings()])
+    const amount = formatCurrency(transaction.amountMinor, settings.currency)
+    const sign = transaction.type === 'expense' ? '-' : '+'
+    const title = transaction.type === 'expense' ? 'Expense logged' : 'Income logged'
+    await notify(title, {
+      body: `${sign}${amount} · ${category?.name ?? transaction.description}`,
+      tag: 'transaction-added',
+    })
+  } catch {
+    // Notifications are best-effort — never let this block or fail the transaction flow.
+  }
 }
 
 export async function updateTransaction(id: string, input: UpdateTransactionInput): Promise<void> {
