@@ -13,7 +13,7 @@ import { CreditDueCard } from '@/components/home/CreditDueCard'
 import { CreditDueSheet } from '@/components/home/CreditDueSheet'
 import { useBalance, useMonthSummary } from '@/hooks/useAnalytics'
 import { useBudgetsForMonth } from '@/hooks/useBudgets'
-import { useOutstandingCredit, useRecentTransactions } from '@/hooks/useTransactions'
+import { useOutstandingCredit, useRecentlySettledCredit, useRecentTransactions } from '@/hooks/useTransactions'
 import { useGoals } from '@/hooks/useGoals'
 import { useSettings } from '@/hooks/useSettings'
 import { formatCurrency } from '@/utils/money'
@@ -31,6 +31,7 @@ export default function HomePage() {
   const { transactions: recent, isLoading: recentLoading } = useRecentTransactions(5)
   const { goals } = useGoals()
   const { totalMinor: creditDueMinor, transactions: creditDue } = useOutstandingCredit()
+  const { transactions: recentlyPaidCredit } = useRecentlySettledCredit(1)
   const [editing, setEditing] = useState<Transaction | null>(null)
   const [creditSheetOpen, setCreditSheetOpen] = useState(false)
   const { openAddTransaction } = useOutletContext<AppShellContext>()
@@ -75,7 +76,7 @@ export default function HomePage() {
         </CardContent>
       </Card>
 
-      {creditDueMinor > 0 && (
+      {(creditDueMinor > 0 || recentlyPaidCredit.length > 0) && (
         <CreditDueCard totalMinor={creditDueMinor} count={creditDue.length} onClick={() => setCreditSheetOpen(true)} />
       )}
 
