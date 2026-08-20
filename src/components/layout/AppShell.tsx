@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { BottomNav } from '@/components/layout/BottomNav'
-import { OfflineBanner } from '@/components/pwa/OfflineBanner'
+import { SyncStatusIndicator } from '@/components/pwa/SyncStatusIndicator'
 import { TransactionFormSheet } from '@/components/transactions/TransactionFormSheet'
 import type { TransactionType } from '@/types/models'
 
@@ -27,7 +27,7 @@ export function AppShell() {
         <div className="absolute top-1/3 -right-20 h-72 w-72 rounded-full bg-orange-500/15 blur-[100px]" />
         <div className="absolute bottom-10 left-1/4 h-56 w-56 rounded-full bg-blue-500/10 blur-[90px]" />
       </div>
-      <OfflineBanner />
+      <SyncStatusIndicator />
       <main className="flex-1 pb-28">
         {/* Keying on the path remounts this wrapper on every navigation, which restarts the CSS animation. */}
         <div key={location.pathname} className="animate-page-in">
