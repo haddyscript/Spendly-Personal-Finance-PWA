@@ -50,7 +50,8 @@ export function CategoryDonutChart({ data, totalMinor }: CategoryDonutChartProps
               paddingAngle={data.length > 1 ? 2 : 0}
               stroke={cardColor}
               strokeWidth={2}
-              isAnimationActive={false}
+              animationDuration={700}
+              animationEasing="ease-out"
             >
               {data.map((slice) => (
                 <Cell key={slice.categoryId} fill={slice.color} />

@@ -55,6 +55,21 @@ export default function AnalyticsPage() {
 
       <div className="px-5">
         <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>Monthly Spending</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {seriesLoading ? (
+              <Skeleton className="h-52 w-full" />
+            ) : (
+              <MonthlyBarChart data={series} selectedMonth={month} onMonthClick={setMonth} />
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="px-5">
+        <Card>
           <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle>Spending by Category</CardTitle>
             <div className="flex gap-1 rounded-lg bg-secondary p-1">
@@ -81,36 +96,18 @@ export default function AnalyticsPage() {
               <CategoryDonutChart data={slices} totalMinor={total} />
             )}
           </CardContent>
-        </Card>
-      </div>
 
-      <div className="px-5">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle>Monthly Spending</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {seriesLoading ? (
-              <Skeleton className="h-52 w-full" />
-            ) : (
-              <MonthlyBarChart data={series} selectedMonth={month} onMonthClick={setMonth} />
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="px-5">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle>Top {type === 'expense' ? 'Spending' : 'Income'} Categories</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {topCategories.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No data yet.</p>
-            ) : (
-              <TopCategoriesList items={topCategories} />
-            )}
-          </CardContent>
+          {topCategories.length > 0 && (
+            <>
+              <div className="mx-4 border-t border-border" />
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Top {type === 'expense' ? 'Spending' : 'Income'} Categories</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <TopCategoriesList items={topCategories} />
+              </CardContent>
+            </>
+          )}
         </Card>
       </div>
     </div>

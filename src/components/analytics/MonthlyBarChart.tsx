@@ -71,7 +71,8 @@ export function MonthlyBarChart({ data, selectedMonth, onMonthClick }: MonthlyBa
               dataKey="income"
               radius={[4, 4, 4, 4]}
               maxBarSize={14}
-              isAnimationActive={false}
+              animationDuration={600}
+              animationEasing="ease-out"
               onClick={(entry) => onMonthClick?.((entry as unknown as MonthlyTotal).month)}
               className={onMonthClick ? 'cursor-pointer' : undefined}
             >
@@ -83,7 +84,9 @@ export function MonthlyBarChart({ data, selectedMonth, onMonthClick }: MonthlyBa
               dataKey="expense"
               radius={[4, 4, 4, 4]}
               maxBarSize={14}
-              isAnimationActive={false}
+              animationDuration={600}
+              animationEasing="ease-out"
+              animationBegin={80}
               onClick={(entry) => onMonthClick?.((entry as unknown as MonthlyTotal).month)}
               className={onMonthClick ? 'cursor-pointer' : undefined}
             >
