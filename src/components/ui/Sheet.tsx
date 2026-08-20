@@ -39,7 +39,7 @@ export function Sheet({ open, onClose, title, children, className }: SheetProps)
         aria-label={title}
         className={cn(
           GLASS_STRONG,
-          'relative z-10 max-h-[92dvh] w-full animate-sheet-in overflow-y-auto rounded-t-3xl p-5 shadow-2xl safe-bottom sm:max-w-md sm:rounded-3xl',
+          'relative z-10 max-h-[92dvh] w-full touch-pan-y animate-sheet-in overflow-y-auto rounded-t-3xl p-5 shadow-2xl safe-bottom sm:max-w-md sm:rounded-3xl',
           className,
         )}
       >
