@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { Logo } from '@/components/layout/Logo'
@@ -125,14 +125,21 @@ export default function App() {
   usePrefetchPages()
 
   // Drives a brief fade-and-scale exit instead of an abrupt cut from splash to app content.
+  // hasStartedExit (a ref, not state) keeps this effect's dependency array down to just
+  // `dataReady` — including splashPhase itself here would make React re-run the effect (and
+  // therefore clear the timer via cleanup) the instant setSplashPhase('exiting') fires below,
+  // cancelling the timeout before it ever reaches 'done' and leaving the app stuck showing a
+  // fully faded-out (invisible) splash forever.
   const dataReady = !isLoading && !!settings && splashMinElapsed
   const [splashPhase, setSplashPhase] = useState<'visible' | 'exiting' | 'done'>('visible')
+  const hasStartedExit = useRef(false)
   useEffect(() => {
-    if (!dataReady || splashPhase !== 'visible') return
+    if (!dataReady || hasStartedExit.current) return
+    hasStartedExit.current = true
     setSplashPhase('exiting')
     const timer = setTimeout(() => setSplashPhase('done'), SPLASH_EXIT_DURATION_MS)
     return () => clearTimeout(timer)
-  }, [dataReady, splashPhase])
+  }, [dataReady])
 
   useEffect(() => {
     processDueRecurring().then((count) => {
