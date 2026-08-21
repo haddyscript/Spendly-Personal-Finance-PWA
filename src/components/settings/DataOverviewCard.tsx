@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Receipt, Repeat, Shapes, Target } from 'lucide-react'
+import { Receipt, Repeat, Shapes } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useTransactions } from '@/hooks/useTransactions'
 import { useCategories } from '@/hooks/useCategories'
@@ -8,30 +8,36 @@ import { useRecurringRules } from '@/hooks/useRecurring'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { GLASS } from '@/lib/glass'
 import { cn } from '@/lib/cn'
+import goalsIcon from '@/assets/icons/goals.png'
 
 interface StatTileProps {
   to: string
-  icon: LucideIcon
+  icon?: LucideIcon
+  image?: string
   value: number
   label: string
   gradient: string
 }
 
-function StatTile({ to, icon: Icon, value, label, gradient }: StatTileProps) {
+function StatTile({ to, icon: Icon, image, value, label, gradient }: StatTileProps) {
   return (
     <Link
       to={to}
       className={`${GLASS} flex flex-col gap-2 rounded-2xl p-4 transition-colors active:bg-secondary hover:bg-secondary/60`}
     >
       <div className="flex items-center gap-3">
-        <div
-          className={cn(
-            'flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-white shadow-sm',
-            gradient,
-          )}
-        >
-          <Icon className="h-5 w-5" aria-hidden="true" />
-        </div>
+        {image ? (
+          <img src={image} alt="" className="h-11 w-11 shrink-0 rounded-full object-cover shadow-sm" />
+        ) : (
+          <div
+            className={cn(
+              'flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-white shadow-sm',
+              gradient,
+            )}
+          >
+            {Icon && <Icon className="h-5 w-5" aria-hidden="true" />}
+          </div>
+        )}
         <p className="text-3xl font-bold tabular-nums">{value}</p>
       </div>
       <p className="text-xs text-muted-foreground">{label}</p>
@@ -74,7 +80,7 @@ export function DataOverviewCard() {
         label="Categories"
         gradient="from-pink-500 to-fuchsia-600"
       />
-      <StatTile to="/goals" icon={Target} value={goals.length} label="Goals" gradient="from-cyan-500 to-blue-600" />
+      <StatTile to="/goals" image={goalsIcon} value={goals.length} label="Goals" gradient="from-cyan-500 to-blue-600" />
       <StatTile
         to="/settings/recurring"
         icon={Repeat}

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { ChevronRight, Plus, Receipt, Target, Volume2 } from 'lucide-react'
+import { ChevronRight, Plus, Receipt, Volume2 } from 'lucide-react'
+import goalsIcon from '@/assets/icons/goals.png'
 import { Logo } from '@/components/layout/Logo'
 import { Card, CardContent } from '@/components/ui/Card'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -150,9 +151,7 @@ export default function HomePage() {
         <Card>
           <CardContent className="flex items-center justify-between p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent text-accent-foreground">
-                <Target className="h-5 w-5" aria-hidden="true" />
-              </div>
+              <img src={goalsIcon} alt="" className="h-11 w-11 rounded-full object-cover" />
               <div>
                 <p className="text-sm font-semibold">{goals.length} active goal{goals.length > 1 ? 's' : ''}</p>
                 <p className="text-xs text-muted-foreground">Track your progress</p>

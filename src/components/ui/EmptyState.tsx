@@ -2,17 +2,22 @@ import type { ReactNode } from 'react'
 import type { LucideIcon } from 'lucide-react'
 
 export interface EmptyStateProps {
-  icon: LucideIcon
+  icon?: LucideIcon
+  image?: string
   title: string
   description?: string
   action?: ReactNode
 }
 
-export function EmptyState({ icon: Icon, title, description, action }: EmptyStateProps) {
+export function EmptyState({ icon: Icon, image, title, description, action }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 px-6 py-14 text-center">
       <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary">
-        <Icon className="h-7 w-7 text-muted-foreground" aria-hidden="true" />
+        {image ? (
+          <img src={image} alt="" className="h-14 w-14 rounded-2xl object-cover" />
+        ) : (
+          Icon && <Icon className="h-7 w-7 text-muted-foreground" aria-hidden="true" />
+        )}
       </div>
       <div className="space-y-1">
         <p className="font-medium text-foreground">{title}</p>

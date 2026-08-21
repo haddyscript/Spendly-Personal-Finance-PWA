@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Plus, Target } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { BackButton } from '@/components/layout/BackButton'
@@ -13,6 +13,7 @@ import { useGoals } from '@/hooks/useGoals'
 import { deleteGoal } from '@/services/goalService'
 import { useToast } from '@/hooks/useToast'
 import type { Goal } from '@/types/models'
+import goalsIcon from '@/assets/icons/goals.png'
 
 export default function GoalsPage() {
   const { goals, isLoading } = useGoals()
@@ -59,7 +60,7 @@ export default function GoalsPage() {
       <div className="flex flex-col gap-3 px-5">
         {!isLoading && goals.length === 0 ? (
           <EmptyState
-            icon={Target}
+            image={goalsIcon}
             title="No goals yet"
             description="Set a savings goal and track your progress toward it."
             action={

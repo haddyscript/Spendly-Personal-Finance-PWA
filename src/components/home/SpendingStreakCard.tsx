@@ -1,5 +1,5 @@
-import { Flame } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/Card'
+import dayStreakIcon from '@/assets/icons/day-streak-icon.png'
 
 export interface SpendingStreakCardProps {
   current: number
@@ -10,9 +10,7 @@ export function SpendingStreakCard({ current, loggedToday }: SpendingStreakCardP
   return (
     <Card>
       <CardContent className="flex items-center gap-3 p-4">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-orange-500/15 text-orange-500">
-          <Flame className="h-5 w-5" aria-hidden="true" />
-        </div>
+        <img src={dayStreakIcon} alt="" className="h-11 w-11 shrink-0 rounded-full object-cover" />
         <div>
           <p className="text-sm font-semibold">{current}-day streak</p>
           <p className="text-xs text-muted-foreground">
