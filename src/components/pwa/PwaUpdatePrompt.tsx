@@ -1,17 +1,43 @@
+import { useEffect, useState } from 'react'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import { RefreshCw, X } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { GLASS_STRONG } from '@/lib/glass'
 
+/** How often to re-check for a new deploy while the app stays open in the background. */
+const UPDATE_CHECK_INTERVAL_MS = 60_000
+
 export function PwaUpdatePrompt() {
+  const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null)
   const {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
   } = useRegisterSW({
-    onRegisteredSW(_url, registration) {
-      registration?.update()
+    onRegisteredSW(_url, reg) {
+      if (reg) setRegistration(reg)
     },
   })
+
+  useEffect(() => {
+    if (!registration) return
+
+    // Installed PWAs are usually resumed from the background rather than freshly
+    // loaded, so a one-time check at registration can miss deploys that land while
+    // the app is idle. Re-check on an interval and whenever the app becomes visible.
+    registration.update()
+    const interval = window.setInterval(() => registration.update(), UPDATE_CHECK_INTERVAL_MS)
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') registration.update()
+    }
+    document.addEventListener('visibilitychange', handleVisibility)
+    window.addEventListener('focus', handleVisibility)
+
+    return () => {
+      window.clearInterval(interval)
+      document.removeEventListener('visibilitychange', handleVisibility)
+      window.removeEventListener('focus', handleVisibility)
+    }
+  }, [registration])
 
   if (!needRefresh) return null
 
