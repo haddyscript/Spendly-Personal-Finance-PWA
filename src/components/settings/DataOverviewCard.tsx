@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { Shapes } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useTransactions } from '@/hooks/useTransactions'
 import { useCategories } from '@/hooks/useCategories'
@@ -11,6 +10,7 @@ import { cn } from '@/lib/cn'
 import goalsIcon from '@/assets/icons/goals.png'
 import transactionsIcon from '@/assets/icons/transaction-logo.png'
 import activeRecurringIcon from '@/assets/icons/active-recurring-icon.png'
+import categoriesIcon from '@/assets/icons/categories-icon.png'
 
 interface StatTileProps {
   to: string
@@ -77,7 +77,7 @@ export function DataOverviewCard() {
       />
       <StatTile
         to="/settings/categories"
-        icon={Shapes}
+        image={categoriesIcon}
         value={categories.length}
         label="Categories"
         gradient="from-pink-500 to-fuchsia-600"
