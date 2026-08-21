@@ -233,7 +233,7 @@ function TransactionForm({ transaction, defaultType, onClose }: TransactionFormP
                     : 'border-border text-foreground hover:bg-secondary'
                 }`}
               >
-                <PaymentMethodIcon method={method} size={16} />
+                <PaymentMethodIcon method={method} size={24} />
                 {PAYMENT_METHOD_LABELS[method]}
               </button>
             ))}
