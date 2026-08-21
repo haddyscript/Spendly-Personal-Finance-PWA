@@ -1,6 +1,7 @@
 import { createElement } from 'react'
 import { getIcon } from '@/lib/icons'
 import { cn } from '@/lib/cn'
+import { CATEGORY_ICON_IMAGES } from '@/lib/categoryIcons'
 
 export interface CategoryIconProps {
   icon: string
@@ -17,6 +18,14 @@ const SIZES = {
 
 export function CategoryIcon({ icon, color, size = 'md', className }: CategoryIconProps) {
   const dims = SIZES[size]
+  const image = CATEGORY_ICON_IMAGES[icon]
+
+  if (image) {
+    return (
+      <img src={image} alt="" className={cn('shrink-0 rounded-full object-cover', dims.wrapper, className)} />
+    )
+  }
+
   return (
     <div
       className={cn('flex shrink-0 items-center justify-center rounded-full', dims.wrapper, className)}
