@@ -19,6 +19,7 @@ import type { PaymentMethod, Transaction, TransactionType } from '@/types/models
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Trash2 } from 'lucide-react'
 import { PAYMENT_METHOD_LABELS } from '@/lib/paymentMethods'
+import { PaymentMethodIcon } from '@/components/transactions/PaymentMethodIcon'
 
 export interface TransactionFormSheetProps {
   open: boolean
@@ -226,12 +227,13 @@ function TransactionForm({ transaction, defaultType, onClose }: TransactionFormP
                 key={method}
                 type="button"
                 onClick={() => setPaymentMethod(method)}
-                className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                className={`flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
                   paymentMethod === method
                     ? 'border-primary bg-primary text-primary-foreground'
                     : 'border-border text-foreground hover:bg-secondary'
                 }`}
               >
+                <PaymentMethodIcon method={method} size={16} />
                 {PAYMENT_METHOD_LABELS[method]}
               </button>
             ))}
