@@ -1,8 +1,8 @@
-import { Check, ChevronRight, CreditCard } from 'lucide-react'
+import { Check, ChevronRight } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/Card'
 import { useSettings } from '@/hooks/useSettings'
 import { formatCurrency } from '@/utils/money'
-import { cn } from '@/lib/cn'
+import creditToPayIcon from '@/assets/icons/credit-to-pay-icon.png'
 
 export interface CreditDueCardProps {
   totalMinor: number
@@ -19,14 +19,13 @@ export function CreditDueCard({ totalMinor, count, onClick }: CreditDueCardProps
       <Card>
         <CardContent className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
-            <div
-              className={cn(
-                'flex h-11 w-11 items-center justify-center rounded-xl',
-                allPaid ? 'bg-success/15 text-success' : 'bg-warning/15 text-warning',
-              )}
-            >
-              {allPaid ? <Check className="h-5 w-5" aria-hidden="true" /> : <CreditCard className="h-5 w-5" aria-hidden="true" />}
-            </div>
+            {allPaid ? (
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-success/15 text-success">
+                <Check className="h-5 w-5" aria-hidden="true" />
+              </div>
+            ) : (
+              <img src={creditToPayIcon} alt="" className="h-11 w-11 rounded-full object-cover" />
+            )}
             <div>
               <p className="text-sm font-semibold">{allPaid ? 'Credit: all paid up' : 'Credit to pay'}</p>
               <p className="text-xs text-muted-foreground">
