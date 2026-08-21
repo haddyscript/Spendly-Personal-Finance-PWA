@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/Card'
 import { formatCurrency } from '@/utils/money'
 import { monthKeyToLabel } from '@/utils/date'
 import { useSettings } from '@/hooks/useSettings'
+import { useCountUp } from '@/hooks/useCountUp'
 import type { SpendingTrend } from '@/utils/calculations'
 
 export interface AnalyticsHeroCardProps {
@@ -13,6 +14,7 @@ export interface AnalyticsHeroCardProps {
 
 export function AnalyticsHeroCard({ month, expenseMinor, trend }: AnalyticsHeroCardProps) {
   const { settings } = useSettings()
+  const animatedExpenseMinor = useCountUp(expenseMinor)
   const Icon = trend.direction === 'down' ? ArrowDown : trend.direction === 'up' ? ArrowUp : ArrowRight
   const tone =
     trend.direction === 'down'
@@ -25,7 +27,7 @@ export function AnalyticsHeroCard({ month, expenseMinor, trend }: AnalyticsHeroC
     <Card className="border-none bg-gradient-to-br from-violet-600 to-indigo-700 text-white shadow-sm">
       <CardContent className="p-5">
         <p className="text-sm text-white/70">Total Spent · {monthKeyToLabel(month)}</p>
-        <p className="mt-1 text-4xl font-bold tabular-nums">{formatCurrency(expenseMinor, settings?.currency)}</p>
+        <p className="mt-1 text-4xl font-bold tabular-nums">{formatCurrency(animatedExpenseMinor, settings?.currency)}</p>
 
         <div className="mt-4 flex items-center gap-2 text-xs">
           <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-semibold ${tone}`}>
