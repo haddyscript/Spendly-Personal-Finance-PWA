@@ -14,6 +14,8 @@ function getAudioContext(): AudioContext | null {
   }
 }
 
+let hasUserInteracted = false
+
 /**
  * AudioContext starts suspended until the page has seen a user gesture. Call this once from
  * any early pointerdown/click so the context is already unlocked by the time a notification
@@ -21,10 +23,22 @@ function getAudioContext(): AudioContext | null {
  */
 export function warmUpNotificationSound(): void {
   const unlock = () => {
+    hasUserInteracted = true
     void getAudioContext()?.resume()
     window.removeEventListener('pointerdown', unlock)
   }
   window.addEventListener('pointerdown', unlock, { once: true })
+}
+
+/**
+ * Whether the chime is actually able to play. A notification can fire before the page has ever
+ * seen a tap — e.g. the "Welcome back" notification on app launch — and browsers categorically
+ * block audio output (any audio, not specific to this app) until a user gesture has occurred.
+ * Callers should fall back to the OS's own notification sound in that case, rather than ending
+ * up with neither.
+ */
+export function canPlayNotificationChime(): boolean {
+  return hasUserInteracted
 }
 
 function playTone(ctx: AudioContext, startTime: number, freq: number, duration: number, gainPeak: number): void {
