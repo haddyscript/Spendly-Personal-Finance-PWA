@@ -1,4 +1,4 @@
-import { Banknote, MoreHorizontal } from 'lucide-react'
+import { MoreHorizontal } from 'lucide-react'
 import { PAYMENT_METHOD_LOGOS } from '@/lib/paymentMethods'
 import { cn } from '@/lib/cn'
 import type { PaymentMethod } from '@/types/models'
@@ -24,9 +24,8 @@ export function PaymentMethodIcon({ method, size = 18, className }: PaymentMetho
     )
   }
 
-  const Icon = method === 'cash' ? Banknote : MoreHorizontal
   return (
-    <Icon
+    <MoreHorizontal
       className={cn('shrink-0', className)}
       style={{ width: size, height: size }}
       aria-hidden="true"

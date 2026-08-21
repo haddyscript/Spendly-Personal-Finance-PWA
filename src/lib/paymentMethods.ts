@@ -1,4 +1,5 @@
 import type { PaymentMethod } from '@/types/models'
+import cashLogo from '@/assets/PaymentMethodLogo/cash-logo.png'
 import atomeLogo from '@/assets/PaymentMethodLogo/atome-logo.png'
 import creditCardLogo from '@/assets/PaymentMethodLogo/credit-card-logo.png'
 import gcashLogo from '@/assets/PaymentMethodLogo/gcash-logo.png'
@@ -27,8 +28,9 @@ export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
   other: 'Other',
 }
 
-/** Official brand logos, keyed by payment method. Methods without a real-world brand (cash, other) fall back to a generic icon — see PaymentMethodIcon. */
+/** Official brand logos, keyed by payment method. Methods without a real-world brand (other) fall back to a generic icon — see PaymentMethodIcon. */
 export const PAYMENT_METHOD_LOGOS: Partial<Record<PaymentMethod, string>> = {
+  cash: cashLogo,
   gcash: gcashLogo,
   gotyme: gotymeLogo,
   maribank: maribankLogo,
