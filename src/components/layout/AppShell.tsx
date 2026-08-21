@@ -21,7 +21,7 @@ export function AppShell() {
   }
 
   return (
-    <div className="relative mx-auto flex min-h-dvh max-w-3xl flex-col bg-background">
+    <div className="relative mx-auto flex min-h-dvh max-w-5xl flex-col bg-background">
       <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
         <div className="absolute -top-16 -left-16 h-64 w-64 rounded-full bg-violet-500/20 blur-[90px]" />
         <div className="absolute top-1/3 -right-20 h-72 w-72 rounded-full bg-orange-500/15 blur-[100px]" />

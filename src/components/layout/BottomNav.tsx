@@ -62,7 +62,7 @@ function TabLink({ to, label, icon: Icon, end }: NavTab) {
 export function BottomNav({ onAddClick }: { onAddClick: () => void }) {
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-2 z-40 flex justify-center safe-bottom">
-      <nav aria-label="Primary" className="pointer-events-auto relative w-full max-w-3xl px-4">
+      <nav aria-label="Primary" className="pointer-events-auto relative w-full max-w-5xl px-4">
         <div
           className="relative drop-shadow-[0_8px_20px_rgba(0,0,0,0.25)]"
           style={{ height: BAR_VIEWBOX_HEIGHT }}
