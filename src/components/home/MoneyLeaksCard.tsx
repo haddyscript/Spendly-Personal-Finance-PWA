@@ -1,8 +1,8 @@
-import { Droplets } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/Card'
 import { useSettings } from '@/hooks/useSettings'
 import { formatCurrency } from '@/utils/money'
 import type { MoneyLeak } from '@/utils/calculations'
+import moneyLeaksIcon from '@/assets/icons/money-leaks-icon.png'
 
 export interface MoneyLeaksCardProps {
   leaks: MoneyLeak[]
@@ -18,9 +18,7 @@ export function MoneyLeaksCard({ leaks, onClick }: MoneyLeaksCardProps) {
     <button type="button" onClick={onClick} className="block w-full text-left">
       <Card>
         <CardContent className="flex items-center gap-3 p-4">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-500/15 text-sky-500">
-            <Droplets className="h-5 w-5" aria-hidden="true" />
-          </div>
+          <img src={moneyLeaksIcon} alt="" className="h-11 w-11 shrink-0 rounded-full object-cover" />
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold">{formatCurrency(totalMinor, settings?.currency)} in money leaks</p>
             <p className="truncate text-xs text-muted-foreground">
