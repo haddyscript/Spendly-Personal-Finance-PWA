@@ -204,14 +204,27 @@ export default function SettingsPage() {
                 >
                   <div
                     className={cn(
-                      'flex h-24 w-full flex-col gap-1.5 rounded-2xl border p-2.5 transition-shadow',
-                      mode === 'light' ? 'border-zinc-200 bg-zinc-50' : 'border-zinc-800 bg-zinc-900',
+                      'flex h-24 w-full flex-col gap-1 overflow-hidden rounded-2xl border p-2 transition-shadow',
+                      mode === 'light' ? 'border-zinc-200 bg-white' : 'border-zinc-800 bg-zinc-950',
                       selected && 'ring-2 ring-violet-500 ring-offset-2 ring-offset-card',
                     )}
                   >
-                    <div className="h-7 w-full shrink-0 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-700" />
-                    <div className={cn('h-2 w-3/4 rounded-full', mode === 'light' ? 'bg-zinc-300' : 'bg-zinc-700')} />
-                    <div className={cn('h-2 w-1/2 rounded-full', mode === 'light' ? 'bg-zinc-300' : 'bg-zinc-700')} />
+                    {/* mini status bar, mimicking the app's actual header */}
+                    <div className="flex items-center justify-between px-0.5">
+                      <div className={cn('h-1 w-5 rounded-full', mode === 'light' ? 'bg-zinc-300' : 'bg-zinc-700')} />
+                      <div className={cn('h-1 w-1 rounded-full', mode === 'light' ? 'bg-zinc-300' : 'bg-zinc-700')} />
+                    </div>
+                    {/* mini balance card */}
+                    <div className="h-6 w-full shrink-0 rounded-md bg-gradient-to-br from-violet-600 to-indigo-700" />
+                    {/* mini transaction rows */}
+                    <div className="flex items-center gap-1">
+                      <div className="h-2 w-2 shrink-0 rounded-full bg-orange-500" />
+                      <div className={cn('h-1.5 flex-1 rounded-full', mode === 'light' ? 'bg-zinc-200' : 'bg-zinc-800')} />
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
+                      <div className={cn('h-1.5 flex-1 rounded-full', mode === 'light' ? 'bg-zinc-200' : 'bg-zinc-800')} />
+                    </div>
                   </div>
                   <span className="text-sm font-medium capitalize">{mode}</span>
                   <span
