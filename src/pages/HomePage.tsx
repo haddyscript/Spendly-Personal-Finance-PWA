@@ -30,8 +30,9 @@ import { useGoals } from '@/hooks/useGoals'
 import { useSettings } from '@/hooks/useSettings'
 import { formatCurrency } from '@/utils/money'
 import { monthKeyToLabel, toMonthKey } from '@/utils/date'
-import { speak } from '@/lib/speech'
+import { cancelSpeech, speak } from '@/lib/speech'
 import { pickPhrasing, speakableAmount } from '@/lib/speechPhrasing'
+import { cn } from '@/lib/cn'
 import { useEffect, useState } from 'react'
 import { useOutletContext, useSearchParams } from 'react-router-dom'
 import type { Transaction } from '@/types/models'
@@ -70,8 +71,15 @@ export default function HomePage() {
   }, [])
 
   const isLoading = balanceLoading || summaryLoading
+  const [isSpeaking, setIsSpeaking] = useState(false)
 
   function handleSpeakSummary() {
+    if (isSpeaking) {
+      cancelSpeech()
+      setIsSpeaking(false)
+      return
+    }
+
     const currency = settings?.currency ?? 'PHP'
     const bal = speakableAmount(balance, currency)
     const inc = speakableAmount(income, currency)
@@ -83,7 +91,10 @@ export default function HomePage() {
       `Your balance is ${bal}. This month, you've earned ${inc} and spent ${exp}. That leaves ${rem} remaining.`,
       `Here's where you stand. ${bal} total. This month you earned ${inc} and spent ${exp}. ${rem} left to go.`,
     ])
-    speak(phrasing)
+    speak(phrasing, {
+      onStart: () => setIsSpeaking(true),
+      onEnd: () => setIsSpeaking(false),
+    })
   }
 
   return (
@@ -105,13 +116,20 @@ export default function HomePage() {
             <button
               type="button"
               onClick={handleSpeakSummary}
-              aria-label="Read balance summary aloud"
-              className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-white/10 active:bg-white/20"
+              aria-label={isSpeaking ? 'Stop reading balance summary' : 'Read balance summary aloud'}
+              className={cn(
+                'relative flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-white/10 active:bg-white/20',
+                isSpeaking && 'bg-white/15',
+              )}
             >
+              {isSpeaking && <span className="absolute inset-0 animate-ping rounded-full bg-white/20" />}
               <img
                 src={ttsIcon}
                 alt=""
-                className="h-4 w-4 opacity-70 transition-opacity hover:opacity-100"
+                className={cn(
+                  'relative h-6 w-6 opacity-70 transition-all hover:opacity-100',
+                  isSpeaking && 'animate-pulse opacity-100',
+                )}
                 style={{ filter: 'brightness(0) invert(1)' }}
               />
             </button>

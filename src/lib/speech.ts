@@ -34,18 +34,39 @@ function splitIntoSentences(text: string): string[] {
 // talking over the newer one.
 let generation = 0
 
-function speakQueue(sentences: string[], myGeneration: number): void {
-  if (myGeneration !== generation) return
+export interface SpeakOptions {
+  onStart?: () => void
+  onEnd?: () => void
+}
+
+function speakQueue(sentences: string[], myGeneration: number, options?: SpeakOptions): void {
+  if (myGeneration !== generation) {
+    options?.onEnd?.()
+    return
+  }
   const [sentence, ...rest] = sentences
-  if (!sentence) return
+  if (!sentence) {
+    options?.onEnd?.()
+    return
+  }
 
   const utterance = new SpeechSynthesisUtterance(sentence)
   utterance.rate = SPEECH_RATE
   utterance.onend = () => {
-    if (myGeneration !== generation || rest.length === 0) return
-    window.setTimeout(() => speakQueue(rest, myGeneration), PAUSE_BETWEEN_SENTENCES_MS)
+    if (myGeneration !== generation || rest.length === 0) {
+      options?.onEnd?.()
+      return
+    }
+    window.setTimeout(() => speakQueue(rest, myGeneration, options), PAUSE_BETWEEN_SENTENCES_MS)
   }
   window.speechSynthesis.speak(utterance)
+}
+
+/** Cancels any speech in progress (from speak()) and its pending queue continuation. */
+export function cancelSpeech(): void {
+  if (!isSpeechSupported()) return
+  generation++
+  window.speechSynthesis.cancel()
 }
 
 /**
@@ -57,13 +78,20 @@ function speakQueue(sentences: string[], myGeneration: number): void {
  * Safari in particular silently drops speech requests that arrive even one microtask after the
  * interaction that caused them. No-ops silently when unsupported or voice feedback is off.
  */
-export function speak(text: string): void {
-  if (!isSpeechSupported() || !text.trim()) return
+export function speak(text: string, options?: SpeakOptions): void {
+  if (!isSpeechSupported() || !text.trim()) {
+    options?.onEnd?.()
+    return
+  }
 
   const settings = getCachedSettings()
-  if (settings && !settings.voiceFeedbackEnabled) return
+  if (settings && !settings.voiceFeedbackEnabled) {
+    options?.onEnd?.()
+    return
+  }
 
   window.speechSynthesis.cancel()
   const myGeneration = ++generation
-  speakQueue(splitIntoSentences(text), myGeneration)
+  options?.onStart?.()
+  speakQueue(splitIntoSentences(text), myGeneration, options)
 }
