@@ -35,7 +35,9 @@ export async function notify(title: string, options: NotifyOptions = {}): Promis
   // Plays our own chime instead of the OS default. `silent` suppresses the system sound on
   // Chrome/Android; Safari doesn't respect it, so iOS may still layer its own sound on top —
   // an acceptable platform gap, same as the vibration API being Android-only elsewhere.
-  await playNotificationChime()
+  // Fired without awaiting: the chime is a nice-to-have and must never delay or block the
+  // notification itself from showing, even if something about it hangs or fails.
+  void playNotificationChime()
 
   const registration = await navigator.serviceWorker.ready
   await registration.showNotification(title, {
