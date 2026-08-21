@@ -7,24 +7,31 @@ import { useGoals } from '@/hooks/useGoals'
 import { useRecurringRules } from '@/hooks/useRecurring'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { GLASS } from '@/lib/glass'
+import { cn } from '@/lib/cn'
 
 interface StatTileProps {
   to: string
   icon: LucideIcon
   value: number
   label: string
+  gradient: string
 }
 
-function StatTile({ to, icon: Icon, value, label }: StatTileProps) {
+function StatTile({ to, icon: Icon, value, label, gradient }: StatTileProps) {
   return (
     <Link
       to={to}
-      className={`${GLASS} flex flex-col gap-2 rounded-2xl p-4 transition-colors active:bg-secondary hover:bg-secondary/60`}
+      className={`${GLASS} flex flex-col gap-3 rounded-2xl p-4 transition-colors active:bg-secondary hover:bg-secondary/60`}
     >
-      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+      <div
+        className={cn(
+          'flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br text-white shadow-sm',
+          gradient,
+        )}
+      >
         <Icon className="h-5 w-5" aria-hidden="true" />
       </div>
-      <p className="text-2xl font-bold tabular-nums">{value}</p>
+      <p className="text-3xl font-bold tabular-nums">{value}</p>
       <p className="text-xs text-muted-foreground">{label}</p>
     </Link>
   )
@@ -51,10 +58,28 @@ export function DataOverviewCard() {
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      <StatTile to="/transactions" icon={Receipt} value={transactions.length} label="Transactions" />
-      <StatTile to="/settings/categories" icon={Shapes} value={categories.length} label="Categories" />
-      <StatTile to="/goals" icon={Target} value={goals.length} label="Goals" />
-      <StatTile to="/settings/recurring" icon={Repeat} value={activeRecurring} label="Active Recurring" />
+      <StatTile
+        to="/transactions"
+        icon={Receipt}
+        value={transactions.length}
+        label="Transactions"
+        gradient="from-blue-500 to-violet-600"
+      />
+      <StatTile
+        to="/settings/categories"
+        icon={Shapes}
+        value={categories.length}
+        label="Categories"
+        gradient="from-pink-500 to-fuchsia-600"
+      />
+      <StatTile to="/goals" icon={Target} value={goals.length} label="Goals" gradient="from-cyan-500 to-blue-600" />
+      <StatTile
+        to="/settings/recurring"
+        icon={Repeat}
+        value={activeRecurring}
+        label="Active Recurring"
+        gradient="from-emerald-500 to-teal-600"
+      />
     </div>
   )
 }
