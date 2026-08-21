@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom'
 import { Home, Receipt, Wallet, PieChart, Settings, Plus } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/cn'
+import { haptic } from '@/lib/haptics'
 
 interface NavTab {
   to: string
@@ -38,6 +39,7 @@ function TabLink({ to, label, icon: Icon, end }: NavTab) {
     <NavLink
       to={to}
       end={end}
+      onClick={() => haptic('light')}
       className="flex flex-1 flex-col items-center justify-center gap-1 py-3"
     >
       {({ isActive }) => (
@@ -92,7 +94,10 @@ export function BottomNav({ onAddClick }: { onAddClick: () => void }) {
 
           <button
             type="button"
-            onClick={onAddClick}
+            onClick={() => {
+              haptic('medium')
+              onAddClick()
+            }}
             aria-label="Add transaction"
             className="absolute -top-6 flex h-16 w-16 -translate-x-1/2 items-center justify-center rounded-full bg-gradient-to-b from-violet-500 to-violet-700 text-white shadow-[0_0_24px_rgba(139,92,246,0.55)] transition-transform active:scale-95"
             style={{ left: `${NOTCH_CENTER_PERCENT}%` }}

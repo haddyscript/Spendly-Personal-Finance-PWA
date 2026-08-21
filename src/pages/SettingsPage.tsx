@@ -34,6 +34,7 @@ import { clearAllData, downloadExport, exportAllData, importData } from '@/servi
 import { seedDemoData } from '@/db/seed'
 import { CURRENCY_INFO } from '@/lib/currency'
 import { cn } from '@/lib/cn'
+import { haptic } from '@/lib/haptics'
 import type { CurrencyCode } from '@/types/models'
 
 const ROW_CLASS = 'flex w-full items-center gap-3 p-4 text-left transition-colors active:bg-secondary hover:bg-secondary/60'
@@ -53,7 +54,10 @@ function Switch({ checked, onChange, label }: { checked: boolean; onChange: (nex
       role="switch"
       aria-checked={checked}
       aria-label={label}
-      onClick={() => onChange(!checked)}
+      onClick={() => {
+        haptic('light')
+        onChange(!checked)
+      }}
       className={cn(
         'flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors',
         checked ? 'bg-primary' : 'bg-secondary',
@@ -199,7 +203,10 @@ export default function SettingsPage() {
                 <button
                   key={mode}
                   type="button"
-                  onClick={() => updateSettings({ theme: mode })}
+                  onClick={() => {
+                    haptic('light')
+                    updateSettings({ theme: mode })
+                  }}
                   className="flex flex-1 flex-col items-center gap-2"
                 >
                   <div

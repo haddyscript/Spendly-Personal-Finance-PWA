@@ -1,3 +1,5 @@
+import { haptic } from '@/lib/haptics'
+
 export interface ToastItem {
   id: string
   title: string
@@ -29,6 +31,7 @@ export function pushToast(toast: Omit<ToastItem, 'id'>, durationMs = 3200): stri
   const id = crypto.randomUUID()
   toasts = [...toasts, { ...toast, id }]
   emit()
+  haptic(toast.variant === 'success' ? 'success' : toast.variant === 'destructive' ? 'error' : 'light')
   setTimeout(() => dismissToast(id), durationMs)
   return id
 }
