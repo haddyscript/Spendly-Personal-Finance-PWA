@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Receipt, Repeat, Shapes } from 'lucide-react'
+import { Shapes } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useTransactions } from '@/hooks/useTransactions'
 import { useCategories } from '@/hooks/useCategories'
@@ -9,6 +9,8 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { GLASS } from '@/lib/glass'
 import { cn } from '@/lib/cn'
 import goalsIcon from '@/assets/icons/goals.png'
+import transactionsIcon from '@/assets/icons/transaction-logo.png'
+import activeRecurringIcon from '@/assets/icons/active-recurring-icon.png'
 
 interface StatTileProps {
   to: string
@@ -68,7 +70,7 @@ export function DataOverviewCard() {
     <div className="grid grid-cols-2 gap-3">
       <StatTile
         to="/transactions"
-        icon={Receipt}
+        image={transactionsIcon}
         value={transactions.length}
         label="Transactions"
         gradient="from-blue-500 to-violet-600"
@@ -83,7 +85,7 @@ export function DataOverviewCard() {
       <StatTile to="/goals" image={goalsIcon} value={goals.length} label="Goals" gradient="from-cyan-500 to-blue-600" />
       <StatTile
         to="/settings/recurring"
-        icon={Repeat}
+        image={activeRecurringIcon}
         value={activeRecurring}
         label="Active Recurring"
         gradient="from-emerald-500 to-teal-600"
