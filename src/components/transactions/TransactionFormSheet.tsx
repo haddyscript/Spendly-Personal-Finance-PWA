@@ -221,20 +221,20 @@ function TransactionForm({ transaction, defaultType, onClose }: TransactionFormP
 
         <div>
           <Label>Payment Method</Label>
-          <div className="mt-1.5 flex flex-wrap gap-2">
+          <div className="mt-1.5 grid grid-cols-2 gap-2">
             {PAYMENT_METHODS.map((method) => (
               <button
                 key={method}
                 type="button"
                 onClick={() => setPaymentMethod(method)}
-                className={`flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                className={`flex h-12 items-center gap-2 rounded-xl border px-3 text-sm font-medium transition-colors ${
                   paymentMethod === method
                     ? 'border-primary bg-primary text-primary-foreground'
                     : 'border-border text-foreground hover:bg-secondary'
                 }`}
               >
-                <PaymentMethodIcon method={method} size={24} />
-                {PAYMENT_METHOD_LABELS[method]}
+                <PaymentMethodIcon method={method} size={22} />
+                <span className="truncate">{PAYMENT_METHOD_LABELS[method]}</span>
               </button>
             ))}
           </div>
