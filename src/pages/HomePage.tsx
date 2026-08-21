@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
-import { ChevronRight, Plus, Receipt, Volume2 } from 'lucide-react'
+import { ChevronRight, Plus, Receipt } from 'lucide-react'
 import goalsIcon from '@/assets/icons/goals.png'
+import ttsIcon from '@/assets/icons/sounds-tts-icon.png'
 import { Logo } from '@/components/layout/Logo'
 import { Card, CardContent } from '@/components/ui/Card'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -105,9 +106,14 @@ export default function HomePage() {
               type="button"
               onClick={handleSpeakSummary}
               aria-label="Read balance summary aloud"
-              className="flex h-8 w-8 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white active:bg-white/20"
+              className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-white/10 active:bg-white/20"
             >
-              <Volume2 className="h-4 w-4" aria-hidden="true" />
+              <img
+                src={ttsIcon}
+                alt=""
+                className="h-4 w-4 opacity-70 transition-opacity hover:opacity-100"
+                style={{ filter: 'brightness(0) invert(1)' }}
+              />
             </button>
           </div>
           {isLoading ? (
