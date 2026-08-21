@@ -30,12 +30,35 @@ export const DEFAULT_EXPENSE_CATEGORIES: Category[] = [
   { id: 'cat-other-expense', name: 'Other', type: 'expense', icon: 'MoreHorizontal', color: '#78716c', isDefault: true, createdAt: now() },
 ]
 
+/** Split out so they can also be added retroactively via a db migration, same as MOTORCYCLE_CATEGORY. */
+export const BONUS_CATEGORY: Category = {
+  id: 'cat-bonus',
+  name: 'Bonus',
+  type: 'income',
+  icon: 'Banknote',
+  color: '#f59e0b',
+  isDefault: true,
+  createdAt: now(),
+}
+
+export const ALLOWANCE_CATEGORY: Category = {
+  id: 'cat-allowance',
+  name: 'Allowance',
+  type: 'income',
+  icon: 'PiggyBank',
+  color: '#06b6d4',
+  isDefault: true,
+  createdAt: now(),
+}
+
 export const DEFAULT_INCOME_CATEGORIES: Category[] = [
   { id: 'cat-salary', name: 'Salary', type: 'income', icon: 'Wallet', color: '#10b981', isDefault: true, createdAt: now() },
   { id: 'cat-freelance', name: 'Freelance', type: 'income', icon: 'Laptop', color: '#22c55e', isDefault: true, createdAt: now() },
   { id: 'cat-business', name: 'Business', type: 'income', icon: 'Briefcase', color: '#059669', isDefault: true, createdAt: now() },
   { id: 'cat-investment', name: 'Investment', type: 'income', icon: 'TrendingUp', color: '#0d9488', isDefault: true, createdAt: now() },
   { id: 'cat-gift', name: 'Gift', type: 'income', icon: 'Gift', color: '#84cc16', isDefault: true, createdAt: now() },
+  BONUS_CATEGORY,
+  ALLOWANCE_CATEGORY,
   { id: 'cat-other-income', name: 'Other', type: 'income', icon: 'MoreHorizontal', color: '#65a30d', isDefault: true, createdAt: now() },
 ]
 

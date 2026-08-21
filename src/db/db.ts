@@ -1,6 +1,6 @@
 import Dexie, { type EntityTable } from 'dexie'
 import type { AppSettings, Budget, Category, Goal, RecurringTransaction, Transaction } from '@/types/models'
-import { DEFAULT_CATEGORIES, MOTORCYCLE_CATEGORY } from '@/db/defaultCategories'
+import { ALLOWANCE_CATEGORY, BONUS_CATEGORY, DEFAULT_CATEGORIES, MOTORCYCLE_CATEGORY } from '@/db/defaultCategories'
 
 export class SpendlyDB extends Dexie {
   transactions!: EntityTable<Transaction, 'id'>
@@ -96,6 +96,27 @@ export class SpendlyDB extends Dexie {
         const existing = await tx.table('categories').get(MOTORCYCLE_CATEGORY.id)
         if (!existing) {
           await tx.table('categories').add(MOTORCYCLE_CATEGORY)
+        }
+      })
+
+    // v6: adds Bonus and Allowance income categories. populateDefaults() already covers brand-new
+    // installs via DEFAULT_INCOME_CATEGORIES — this upgrade backfills them for databases created
+    // before they existed.
+    this.version(6)
+      .stores({
+        transactions: 'id, type, categoryId, date, paymentMethod, recurringId, [type+date]',
+        categories: 'id, type',
+        budgets: 'id, month, categoryId, [month+categoryId]',
+        goals: 'id, targetDate, completedAt, createdAt',
+        recurring: 'id, nextOccurrence',
+        settings: 'id',
+      })
+      .upgrade(async (tx) => {
+        for (const category of [BONUS_CATEGORY, ALLOWANCE_CATEGORY]) {
+          const existing = await tx.table('categories').get(category.id)
+          if (!existing) {
+            await tx.table('categories').add(category)
+          }
         }
       })
 
