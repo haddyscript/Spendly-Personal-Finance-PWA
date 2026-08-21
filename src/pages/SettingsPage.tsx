@@ -38,6 +38,8 @@ import { cn } from '@/lib/cn'
 import { haptic } from '@/lib/haptics'
 import { isSpeechSupported } from '@/lib/speech'
 import type { CurrencyCode } from '@/types/models'
+import loadDemoDataIcon from '@/assets/icons/load-demo-data-icon.png'
+import philippinePesoIcon from '@/assets/icons/philippine-peso-icon.png'
 
 const ROW_CLASS = 'flex w-full items-center gap-3 p-4 text-left transition-colors active:bg-secondary hover:bg-secondary/60'
 
@@ -264,9 +266,13 @@ export default function SettingsPage() {
         <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Currency</h2>
         <Card>
           <button type="button" onClick={() => setCurrencySheetOpen(true)} className={cn(ROW_CLASS, 'rounded-2xl')}>
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[7px] bg-emerald-500 text-sm font-semibold text-white">
-              {CURRENCY_INFO[currency].symbol}
-            </span>
+            {currency === 'PHP' ? (
+              <img src={philippinePesoIcon} alt="" className="h-7 w-7 shrink-0 rounded-[7px] object-cover" />
+            ) : (
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[7px] bg-emerald-500 text-sm font-semibold text-white">
+                {CURRENCY_INFO[currency].symbol}
+              </span>
+            )}
             <div className="min-w-0 flex-1">
               <p className="text-[15px] font-medium">{CURRENCY_INFO[currency].name}</p>
               <p className="text-xs text-muted-foreground">{currency}</p>
@@ -299,7 +305,7 @@ export default function SettingsPage() {
           </button>
           <input ref={fileInputRef} type="file" accept="application/json" className="hidden" onChange={handleFileSelected} />
           <button type="button" onClick={handleLoadDemoData} className={ROW_CLASS}>
-            <IconBadge icon={Sparkles} className="bg-pink-500" />
+            <img src={loadDemoDataIcon} alt="" className="h-7 w-7 shrink-0 rounded-[7px] object-cover" />
             <span className="flex-1 text-[15px] font-medium">Load Demo Data</span>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
