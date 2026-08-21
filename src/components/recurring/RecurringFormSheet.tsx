@@ -15,6 +15,7 @@ import type { PaymentMethod, RecurringFrequency, RecurringTransaction, Transacti
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Trash2 } from 'lucide-react'
 import { PAYMENT_METHOD_LABELS } from '@/lib/paymentMethods'
+import { PaymentMethodIcon } from '@/components/transactions/PaymentMethodIcon'
 
 const FREQUENCY_LABELS: Record<RecurringFrequency, string> = {
   daily: 'Daily',
@@ -198,12 +199,13 @@ function RecurringForm({ rule, onClose }: RecurringFormProps) {
                 key={method}
                 type="button"
                 onClick={() => setPaymentMethod(method)}
-                className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                className={`flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
                   paymentMethod === method
                     ? 'border-primary bg-primary text-primary-foreground'
                     : 'border-border text-foreground hover:bg-secondary'
                 }`}
               >
+                <PaymentMethodIcon method={method} size={24} />
                 {PAYMENT_METHOD_LABELS[method]}
               </button>
             ))}

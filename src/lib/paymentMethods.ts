@@ -7,6 +7,9 @@ import maribankLogo from '@/assets/PaymentMethodLogo/maribank-logo.png'
 import metrobankLogo from '@/assets/PaymentMethodLogo/metro-bank-logo.png'
 import securitybankLogo from '@/assets/PaymentMethodLogo/security-bank-logo.png'
 import unionbankLogo from '@/assets/PaymentMethodLogo/unionbank-logo.jpeg'
+import chinabankLogo from '@/assets/PaymentMethodLogo/china-bank.png'
+import landbankLogo from '@/assets/PaymentMethodLogo/land-bank-logo.png'
+import citysavingsbankLogo from '@/assets/PaymentMethodLogo/city-savings-bank.png'
 
 export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
   cash: 'Cash',
@@ -16,6 +19,9 @@ export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
   unionbank: 'Union Bank',
   securitybank: 'Security Bank',
   metrobank: 'Metro Bank',
+  chinabank: 'China Bank',
+  landbank: 'Landbank',
+  citysavingsbank: 'City Savings Bank',
   credit_card: 'Credit Card',
   atome: 'Atome',
   other: 'Other',
@@ -29,6 +35,9 @@ export const PAYMENT_METHOD_LOGOS: Partial<Record<PaymentMethod, string>> = {
   unionbank: unionbankLogo,
   securitybank: securitybankLogo,
   metrobank: metrobankLogo,
+  chinabank: chinabankLogo,
+  landbank: landbankLogo,
+  citysavingsbank: citysavingsbankLogo,
   credit_card: creditCardLogo,
   atome: atomeLogo,
 }
