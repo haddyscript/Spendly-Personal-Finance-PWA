@@ -15,6 +15,7 @@ import incomeBusinessIcon from '@/assets/icons/choose-category/income-business-i
 import incomeFreelanceIcon from '@/assets/icons/choose-category/income-freelance-icon.png'
 import incomeGiftIcon from '@/assets/icons/choose-category/income-gift-icon.png'
 import incomeSalaryIcon from '@/assets/icons/choose-category/income-salary-icon.png'
+import incomeInvestmentIcon from '@/assets/icons/choose-category/income-investment-icon.png'
 
 /** Custom illustrated icons for specific categories, keyed by the category's lucide icon name (Category.icon). Categories not listed here fall back to their lucide icon — see CategoryIcon. */
 export const CATEGORY_ICON_IMAGES: Partial<Record<string, string>> = {
@@ -35,4 +36,5 @@ export const CATEGORY_ICON_IMAGES: Partial<Record<string, string>> = {
   Laptop: incomeFreelanceIcon,
   Gift: incomeGiftIcon,
   Wallet: incomeSalaryIcon,
+  TrendingUp: incomeInvestmentIcon,
 }
