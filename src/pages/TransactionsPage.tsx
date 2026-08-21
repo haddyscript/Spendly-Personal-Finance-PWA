@@ -51,34 +51,34 @@ export default function TransactionsPage() {
 
   return (
     <div className="flex flex-col gap-4 pb-6 pt-6 safe-top">
-      <PageHeader title="Transactions" />
-
-      <div className="flex items-center gap-2 px-5">
-        <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="search"
-            placeholder="Search transactions"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="h-12 w-full rounded-xl border border-input bg-transparent pl-10 pr-4 text-[15px] outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            aria-label="Search transactions"
-          />
+      <PageHeader title="Transactions">
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="search"
+              placeholder="Search transactions"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="h-12 w-full rounded-xl border border-input bg-transparent pl-10 pr-4 text-[15px] outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label="Search transactions"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => setFilterOpen(true)}
+            aria-label="Filter transactions"
+            className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-input"
+          >
+            <ListFilter className="h-5 w-5" />
+            {activeFilterCount > 0 && (
+              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={() => setFilterOpen(true)}
-          aria-label="Filter transactions"
-          className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-input"
-        >
-          <ListFilter className="h-5 w-5" />
-          {activeFilterCount > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
-              {activeFilterCount}
-            </span>
-          )}
-        </button>
-      </div>
+      </PageHeader>
 
       {filterChipCategory && (
         <div className="px-5">

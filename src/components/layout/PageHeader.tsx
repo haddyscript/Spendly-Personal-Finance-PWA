@@ -5,9 +5,11 @@ export interface PageHeaderProps {
   title: string
   subtitle?: string
   action?: ReactNode
+  /** Rendered below the title, still inside the sticky header — e.g. a search bar that should stay pinned while the page scrolls. */
+  children?: ReactNode
 }
 
-export function PageHeader({ title, subtitle, action }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, action, children }: PageHeaderProps) {
   return (
     <header className={`${GLASS_HEADER} sticky top-0 z-30 border-b border-border/50 px-5 pb-4 pt-6 safe-top`}>
       <div className="flex items-center justify-between gap-3">
@@ -17,6 +19,7 @@ export function PageHeader({ title, subtitle, action }: PageHeaderProps) {
         </div>
         {action}
       </div>
+      {children && <div className="mt-4">{children}</div>}
     </header>
   )
 }
