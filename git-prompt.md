@@ -8,3 +8,4 @@ I will paste it in my terminal;
 - git push 
 - clear
 - clear
+    

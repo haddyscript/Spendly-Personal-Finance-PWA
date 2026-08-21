@@ -12,6 +12,7 @@ import { addTransaction, deleteTransaction, notifyTransactionAdded, updateTransa
 import { checkBudgetAlerts } from '@/services/budgetService'
 import { checkStreakMilestone } from '@/services/streakService'
 import { formatCurrency, fromMinorUnits, toMinorUnits } from '@/utils/money'
+import { pickPhrasing, speakableAmount } from '@/lib/speechPhrasing'
 import { toDateKey } from '@/utils/date'
 import { PAYMENT_METHODS } from '@/types/models'
 import type { PaymentMethod, Transaction, TransactionType } from '@/types/models'
@@ -100,9 +101,15 @@ function TransactionForm({ transaction, defaultType, onClose }: TransactionFormP
           date,
           paymentMethod,
         })
+        const spokenAmount = speakableAmount(created.amountMinor, settings?.currency ?? 'PHP')
         success(
           `${type === 'expense' ? 'Expense' : 'Income'} added`,
           `${created.description} · ${formatCurrency(created.amountMinor, settings?.currency)}`,
+          pickPhrasing([
+            `Logged ${created.description}, ${spokenAmount}.`,
+            `Got it — ${created.description} for ${spokenAmount}.`,
+            `Added ${created.description}, ${spokenAmount}.`,
+          ]),
         )
         void notifyTransactionAdded(created)
         if (type === 'expense') {

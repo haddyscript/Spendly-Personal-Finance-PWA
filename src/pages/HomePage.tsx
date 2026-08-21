@@ -26,10 +26,10 @@ import {
 } from '@/hooks/useTransactions'
 import { useGoals } from '@/hooks/useGoals'
 import { useSettings } from '@/hooks/useSettings'
-import { formatCurrency, fromMinorUnits } from '@/utils/money'
+import { formatCurrency } from '@/utils/money'
 import { monthKeyToLabel, toMonthKey } from '@/utils/date'
-import { CURRENCY_INFO } from '@/lib/currency'
 import { speak } from '@/lib/speech'
+import { pickPhrasing, speakableAmount } from '@/lib/speechPhrasing'
 import { useEffect, useState } from 'react'
 import { useOutletContext, useSearchParams } from 'react-router-dom'
 import type { Transaction } from '@/types/models'
@@ -70,11 +70,18 @@ export default function HomePage() {
   const isLoading = balanceLoading || summaryLoading
 
   function handleSpeakSummary() {
-    const currencyName = CURRENCY_INFO[settings?.currency ?? 'PHP'].name
-    const say = (minor: number) => `${fromMinorUnits(minor).toFixed(2)} ${currencyName}`
-    void speak(
-      `Your balance is ${say(balance)}. You've earned ${say(income)} and spent ${say(expense)} this month, leaving ${say(remaining)} remaining.`,
-    )
+    const currency = settings?.currency ?? 'PHP'
+    const bal = speakableAmount(balance, currency)
+    const inc = speakableAmount(income, currency)
+    const exp = speakableAmount(expense, currency)
+    const rem = speakableAmount(remaining, currency)
+
+    const phrasing = pickPhrasing([
+      `You've got ${bal} in the bank. This month you brought in ${inc} and spent ${exp}, leaving ${rem} left over.`,
+      `Your balance is sitting at ${bal}. So far this month, you've earned ${inc} and spent ${exp}, with ${rem} remaining.`,
+      `Here's where you stand — ${bal} total. This month: ${inc} earned, ${exp} spent, ${rem} left to go.`,
+    ])
+    speak(phrasing)
   }
 
   return (

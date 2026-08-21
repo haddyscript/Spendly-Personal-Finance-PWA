@@ -6,6 +6,8 @@ export interface ToastItem {
   title: string
   description?: string
   variant?: 'default' | 'success' | 'destructive'
+  /** Overrides what's spoken aloud — falls back to reading title + description when omitted. */
+  spokenText?: string
 }
 
 type Listener = () => void
@@ -33,7 +35,7 @@ export function pushToast(toast: Omit<ToastItem, 'id'>, durationMs = 3200): stri
   toasts = [...toasts, { ...toast, id }]
   emit()
   haptic(toast.variant === 'success' ? 'success' : toast.variant === 'destructive' ? 'error' : 'light')
-  void speak([toast.title, toast.description].filter(Boolean).join('. '))
+  speak(toast.spokenText ?? [toast.title, toast.description].filter(Boolean).join('. '))
   setTimeout(() => dismissToast(id), durationMs)
   return id
 }
