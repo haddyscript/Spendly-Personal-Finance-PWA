@@ -14,12 +14,12 @@ import { checkStreakMilestone } from '@/services/streakService'
 import { formatCurrency, fromMinorUnits, toMinorUnits } from '@/utils/money'
 import { pickPhrasing, speakableAmount } from '@/lib/speechPhrasing'
 import { toDateKey } from '@/utils/date'
-import { PAYMENT_METHODS } from '@/types/models'
 import type { PaymentMethod, Transaction, TransactionType } from '@/types/models'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Trash2 } from 'lucide-react'
 import { PAYMENT_METHOD_LABELS } from '@/lib/paymentMethods'
 import { PaymentMethodIcon } from '@/components/transactions/PaymentMethodIcon'
+import { PaymentMethodPicker } from '@/components/transactions/PaymentMethodPicker'
 
 export interface TransactionFormSheetProps {
   open: boolean
@@ -55,6 +55,7 @@ function TransactionForm({ transaction, defaultType, onClose }: TransactionFormP
   const [date, setDate] = useState(transaction?.date ?? toDateKey())
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(transaction?.paymentMethod ?? 'cash')
   const [pickerOpen, setPickerOpen] = useState(false)
+  const [paymentPickerOpen, setPaymentPickerOpen] = useState(false)
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
@@ -221,23 +222,14 @@ function TransactionForm({ transaction, defaultType, onClose }: TransactionFormP
 
         <div>
           <Label>Payment Method</Label>
-          <div className="mt-1.5 grid grid-cols-2 gap-2">
-            {PAYMENT_METHODS.map((method) => (
-              <button
-                key={method}
-                type="button"
-                onClick={() => setPaymentMethod(method)}
-                className={`flex h-12 items-center gap-2 rounded-xl border px-3 text-sm font-medium transition-colors ${
-                  paymentMethod === method
-                    ? 'border-primary bg-primary text-primary-foreground'
-                    : 'border-border text-foreground hover:bg-secondary'
-                }`}
-              >
-                <PaymentMethodIcon method={method} size={22} />
-                <span className="truncate">{PAYMENT_METHOD_LABELS[method]}</span>
-              </button>
-            ))}
-          </div>
+          <button
+            type="button"
+            onClick={() => setPaymentPickerOpen(true)}
+            className="mt-1.5 flex h-14 w-full items-center gap-3 rounded-xl border border-input px-3 text-left"
+          >
+            <PaymentMethodIcon method={paymentMethod} size={28} />
+            <span className="text-[15px] font-medium">{PAYMENT_METHOD_LABELS[paymentMethod]}</span>
+          </button>
         </div>
 
         <div className="flex gap-3 pt-1">
@@ -264,6 +256,13 @@ function TransactionForm({ transaction, defaultType, onClose }: TransactionFormP
         type={type}
         selectedId={effectiveCategoryId}
         onSelect={setCategoryId}
+      />
+
+      <PaymentMethodPicker
+        open={paymentPickerOpen}
+        onClose={() => setPaymentPickerOpen(false)}
+        selected={paymentMethod}
+        onSelect={setPaymentMethod}
       />
 
       <ConfirmDialog
