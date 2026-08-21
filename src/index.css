@@ -253,6 +253,20 @@
   .animate-splash-dot {
     animation: splash-dot 1.2s ease-in-out infinite;
   }
+  .animate-sparkle {
+    animation: sparkle-float 2.8s ease-in-out infinite;
+  }
+  .animate-title-reveal {
+    animation:
+      fade-in 0.5s ease-out 0.25s both,
+      text-shimmer 2.6s linear 0.85s infinite;
+  }
+  .animate-progress-indeterminate {
+    animation: progress-indeterminate 1.3s ease-in-out infinite;
+  }
+  .animate-splash-exit {
+    animation: splash-exit 0.38s ease-in forwards;
+  }
   .animate-page-in {
     animation: page-in 0.22s ease-out both;
   }
@@ -384,6 +398,52 @@
   }
 }
 
+@keyframes sparkle-float {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-36px) scale(1);
+  }
+}
+
+@keyframes text-shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes progress-indeterminate {
+  0% {
+    transform: translateX(-110%);
+  }
+  100% {
+    transform: translateX(310%);
+  }
+}
+
+@keyframes splash-exit {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+}
+
 @keyframes page-in {
   from {
     opacity: 0;
@@ -408,6 +468,10 @@
   .animate-glow-pulse,
   .animate-logo-ring,
   .animate-splash-dot,
+  .animate-sparkle,
+  .animate-title-reveal,
+  .animate-progress-indeterminate,
+  .animate-splash-exit,
   .animate-page-in {
     animation: none;
   }

@@ -10,6 +10,7 @@ import { processDueRecurring } from '@/services/recurringService'
 import { isNotificationSupported, notify, requestNotificationPermission } from '@/services/notificationService'
 import { checkLogReminder } from '@/services/reminderService'
 import { checkNoSpendMilestone } from '@/services/noSpendService'
+import { cn } from '@/lib/cn'
 
 const pageImports = {
   home: () => import('@/pages/HomePage'),
@@ -47,6 +48,7 @@ function usePrefetchPages() {
 }
 
 const SPLASH_MIN_DURATION_MS = 3_000
+const SPLASH_EXIT_DURATION_MS = 380
 
 // Keeps the launch splash on screen for a minimum duration, independent of how fast
 // settings actually load, so the entrance animation has room to play out on cold start.
@@ -59,30 +61,58 @@ function useMinSplashDuration() {
   return elapsed
 }
 
-function Splash() {
+const SPARKLES = [
+  { top: '18%', left: '20%', size: 6, color: 'bg-violet-300', delay: '0s' },
+  { top: '24%', left: '78%', size: 4, color: 'bg-amber-300', delay: '0.4s' },
+  { top: '62%', left: '14%', size: 5, color: 'bg-amber-300', delay: '0.9s' },
+  { top: '68%', left: '80%', size: 6, color: 'bg-violet-300', delay: '1.3s' },
+  { top: '40%', left: '8%', size: 3, color: 'bg-violet-300', delay: '1.7s' },
+  { top: '46%', left: '92%', size: 4, color: 'bg-amber-300', delay: '0.65s' },
+  { top: '80%', left: '46%', size: 3, color: 'bg-violet-300', delay: '2.1s' },
+]
+
+function Splash({ exiting = false }: { exiting?: boolean }) {
   return (
-    <div className="relative flex min-h-dvh flex-col items-center justify-center gap-5 overflow-hidden bg-background">
+    <div
+      className={cn(
+        'relative flex min-h-dvh flex-col items-center justify-center gap-5 overflow-hidden bg-background',
+        exiting && 'animate-splash-exit',
+      )}
+    >
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="animate-glow-pulse absolute -top-16 -left-16 h-64 w-64 rounded-full bg-violet-500/20 blur-[90px]" />
         <div className="animate-glow-pulse absolute top-1/3 -right-20 h-72 w-72 rounded-full bg-orange-500/15 blur-[100px] [animation-delay:0.7s]" />
         <div className="animate-glow-pulse absolute bottom-10 left-1/4 h-56 w-56 rounded-full bg-blue-500/10 blur-[90px] [animation-delay:1.4s]" />
+
+        {SPARKLES.map((s, i) => (
+          <span
+            key={i}
+            className={cn('animate-sparkle absolute rounded-full', s.color)}
+            style={{ top: s.top, left: s.left, width: s.size, height: s.size, animationDelay: s.delay }}
+          />
+        ))}
       </div>
 
       <div className="relative flex items-center justify-center">
         <span className="animate-logo-ring absolute h-14 w-14 rounded-2xl border-2 border-violet-500/50" aria-hidden="true" />
         <span
-          className="animate-logo-ring absolute h-14 w-14 rounded-2xl border-2 border-violet-500/50 [animation-delay:0.9s]"
+          className="animate-logo-ring absolute h-14 w-14 rounded-2xl border-2 border-amber-400/40 [animation-delay:0.9s]"
           aria-hidden="true"
         />
         <Logo size="lg" className="animate-logo-launch relative" />
       </div>
 
-      <h1 className="animate-splash-text text-2xl font-bold tracking-tight">Spendly</h1>
+      <div className="flex flex-col items-center gap-1">
+        <h1 className="animate-title-reveal bg-gradient-to-r from-foreground via-violet-400 to-foreground bg-clip-text text-2xl font-bold tracking-tight text-transparent [background-size:200%_auto]">
+          Spendly
+        </h1>
+        <p className="animate-splash-text text-sm text-muted-foreground [animation-delay:0.4s]">
+          Know where your money goes.
+        </p>
+      </div>
 
-      <div className="animate-splash-text flex items-center gap-1.5 [animation-delay:0.15s]">
-        <span className="animate-splash-dot h-1.5 w-1.5 rounded-full bg-muted-foreground" />
-        <span className="animate-splash-dot h-1.5 w-1.5 rounded-full bg-muted-foreground [animation-delay:0.15s]" />
-        <span className="animate-splash-dot h-1.5 w-1.5 rounded-full bg-muted-foreground [animation-delay:0.3s]" />
+      <div className="animate-splash-text h-1 w-32 overflow-hidden rounded-full bg-secondary [animation-delay:0.55s]">
+        <div className="animate-progress-indeterminate h-full w-1/3 rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-400 to-violet-500" />
       </div>
     </div>
   )
@@ -93,6 +123,16 @@ export default function App() {
   const splashMinElapsed = useMinSplashDuration()
   useTheme()
   usePrefetchPages()
+
+  // Drives a brief fade-and-scale exit instead of an abrupt cut from splash to app content.
+  const dataReady = !isLoading && !!settings && splashMinElapsed
+  const [splashPhase, setSplashPhase] = useState<'visible' | 'exiting' | 'done'>('visible')
+  useEffect(() => {
+    if (!dataReady || splashPhase !== 'visible') return
+    setSplashPhase('exiting')
+    const timer = setTimeout(() => setSplashPhase('done'), SPLASH_EXIT_DURATION_MS)
+    return () => clearTimeout(timer)
+  }, [dataReady, splashPhase])
 
   useEffect(() => {
     processDueRecurring().then((count) => {
@@ -135,8 +175,8 @@ export default function App() {
     }
   }, [settings?.hasOnboarded, settings?.notificationsEnabled])
 
-  if (isLoading || !settings || !splashMinElapsed) {
-    return <Splash />
+  if (splashPhase !== 'done' || !settings) {
+    return <Splash exiting={splashPhase === 'exiting'} />
   }
 
   if (!settings.hasOnboarded) {
