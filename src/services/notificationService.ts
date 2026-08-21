@@ -1,4 +1,5 @@
 import { getSettings } from '@/services/settingsService'
+import { playNotificationChime } from '@/lib/notificationSound'
 
 export function isNotificationSupported(): boolean {
   return typeof window !== 'undefined' && 'Notification' in window && 'serviceWorker' in navigator
@@ -31,11 +32,17 @@ export async function notify(title: string, options: NotifyOptions = {}): Promis
   const settings = await getSettings()
   if (!settings.notificationsEnabled) return
 
+  // Plays our own chime instead of the OS default. `silent` suppresses the system sound on
+  // Chrome/Android; Safari doesn't respect it, so iOS may still layer its own sound on top —
+  // an acceptable platform gap, same as the vibration API being Android-only elsewhere.
+  playNotificationChime()
+
   const registration = await navigator.serviceWorker.ready
   await registration.showNotification(title, {
     body: options.body,
     tag: options.tag,
     icon: '/icons/icon-192.png',
     badge: '/icons/icon-192.png',
+    silent: true,
   })
 }
