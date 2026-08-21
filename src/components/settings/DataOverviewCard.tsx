@@ -21,17 +21,19 @@ function StatTile({ to, icon: Icon, value, label, gradient }: StatTileProps) {
   return (
     <Link
       to={to}
-      className={`${GLASS} flex flex-col gap-3 rounded-2xl p-4 transition-colors active:bg-secondary hover:bg-secondary/60`}
+      className={`${GLASS} flex flex-col gap-2 rounded-2xl p-4 transition-colors active:bg-secondary hover:bg-secondary/60`}
     >
-      <div
-        className={cn(
-          'flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br text-white shadow-sm',
-          gradient,
-        )}
-      >
-        <Icon className="h-5 w-5" aria-hidden="true" />
+      <div className="flex items-center gap-3">
+        <div
+          className={cn(
+            'flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-white shadow-sm',
+            gradient,
+          )}
+        >
+          <Icon className="h-5 w-5" aria-hidden="true" />
+        </div>
+        <p className="text-3xl font-bold tabular-nums">{value}</p>
       </div>
-      <p className="text-3xl font-bold tabular-nums">{value}</p>
       <p className="text-xs text-muted-foreground">{label}</p>
     </Link>
   )
