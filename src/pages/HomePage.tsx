@@ -77,9 +77,9 @@ export default function HomePage() {
     const rem = speakableAmount(remaining, currency)
 
     const phrasing = pickPhrasing([
-      `You've got ${bal} in the bank. This month you brought in ${inc} and spent ${exp}, leaving ${rem} left over.`,
-      `Your balance is sitting at ${bal}. So far this month, you've earned ${inc} and spent ${exp}, with ${rem} remaining.`,
-      `Here's where you stand — ${bal} total. This month: ${inc} earned, ${exp} spent, ${rem} left to go.`,
+      `You've got ${bal} in the bank. You brought in ${inc} this month. You spent ${exp}, leaving ${rem} left over.`,
+      `Your balance is ${bal}. This month, you've earned ${inc} and spent ${exp}. That leaves ${rem} remaining.`,
+      `Here's where you stand. ${bal} total. This month you earned ${inc} and spent ${exp}. ${rem} left to go.`,
     ])
     speak(phrasing)
   }

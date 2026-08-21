@@ -1,5 +1,14 @@
 import { getCachedSettings } from '@/lib/settingsCache'
 
+/** Slightly slower than the browser default (1) so words don't run together. */
+const SPEECH_RATE = 0.95
+/**
+ * Deliberate silence between sentences. Queuing multiple utterances back-to-back isn't enough
+ * on its own — some engines leave almost no gap between them, which sounds just as run-on as
+ * one long utterance. This makes the pause explicit and consistent everywhere.
+ */
+const PAUSE_BETWEEN_SENTENCES_MS = 220
+
 export function isSpeechSupported(): boolean {
   return typeof window !== 'undefined' && 'speechSynthesis' in window
 }
@@ -13,13 +22,40 @@ export function warmUpSpeech(): void {
   window.speechSynthesis.getVoices()
 }
 
+function splitIntoSentences(text: string): string[] {
+  return text
+    .split(/(?<=[.!?])\s+/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+}
+
+// Incremented on every speak() call so a stale queued continuation (from a speak() call that
+// was superseded before it finished) can recognize it's no longer current and stop instead of
+// talking over the newer one.
+let generation = 0
+
+function speakQueue(sentences: string[], myGeneration: number): void {
+  if (myGeneration !== generation) return
+  const [sentence, ...rest] = sentences
+  if (!sentence) return
+
+  const utterance = new SpeechSynthesisUtterance(sentence)
+  utterance.rate = SPEECH_RATE
+  utterance.onend = () => {
+    if (myGeneration !== generation || rest.length === 0) return
+    window.setTimeout(() => speakQueue(rest, myGeneration), PAUSE_BETWEEN_SENTENCES_MS)
+  }
+  window.speechSynthesis.speak(utterance)
+}
+
 /**
- * Speaks text aloud via the on-device Web Speech Synthesis API. Voices are bundled with the
- * OS/browser rather than fetched from a server, so this works fully offline. Synchronous and
- * reads settings from a pre-warmed cache (rather than awaiting an IndexedDB read) so the call
- * stays in the same tick as the user gesture that triggered it — Safari in particular silently
- * drops speech requests that arrive even one microtask after the interaction that caused them.
- * No-ops silently when unsupported or when the user has turned voice feedback off in Settings.
+ * Speaks text aloud via the on-device Web Speech Synthesis API, sentence by sentence with a
+ * deliberate pause between each so it reads more like natural speech than one run-on stream.
+ * Voices are bundled with the OS/browser rather than fetched from a server, so this works fully
+ * offline. Synchronous and reads settings from a pre-warmed cache (rather than awaiting an
+ * IndexedDB read) so the call stays in the same tick as the user gesture that triggered it —
+ * Safari in particular silently drops speech requests that arrive even one microtask after the
+ * interaction that caused them. No-ops silently when unsupported or voice feedback is off.
  */
 export function speak(text: string): void {
   if (!isSpeechSupported() || !text.trim()) return
@@ -28,5 +64,6 @@ export function speak(text: string): void {
   if (settings && !settings.voiceFeedbackEnabled) return
 
   window.speechSynthesis.cancel()
-  window.speechSynthesis.speak(new SpeechSynthesisUtterance(text))
+  const myGeneration = ++generation
+  speakQueue(splitIntoSentences(text), myGeneration)
 }
