@@ -14,6 +14,7 @@ import {
   Sun,
   Trash2,
   Upload,
+  Volume2,
 } from 'lucide-react'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { Card } from '@/components/ui/Card'
@@ -35,6 +36,7 @@ import { seedDemoData } from '@/db/seed'
 import { CURRENCY_INFO } from '@/lib/currency'
 import { cn } from '@/lib/cn'
 import { haptic } from '@/lib/haptics'
+import { isSpeechSupported } from '@/lib/speech'
 import type { CurrencyCode } from '@/types/models'
 
 const ROW_CLASS = 'flex w-full items-center gap-3 p-4 text-left transition-colors active:bg-secondary hover:bg-secondary/60'
@@ -136,6 +138,10 @@ export default function SettingsPage() {
     } else if (isIosSafari) {
       toast({ title: 'Install Spendly', description: 'Tap the Share icon, then "Add to Home Screen".' })
     }
+  }
+
+  async function handleVoiceFeedbackToggle(next: boolean) {
+    await updateSettings({ voiceFeedbackEnabled: next })
   }
 
   async function handleNotificationsToggle(next: boolean) {
@@ -319,9 +325,9 @@ export default function SettingsPage() {
 
       <section className="px-5">
         <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Notifications</h2>
-        <Card>
+        <Card className="divide-y divide-border overflow-hidden">
           {isNotificationSupported() ? (
-            <div className={cn(ROW_CLASS, 'rounded-2xl')}>
+            <div className={ROW_CLASS}>
               <IconBadge icon={Bell} className="bg-red-500" />
               <div className="flex-1">
                 <p className="text-[15px] font-medium">Budget & Recurring Alerts</p>
@@ -342,6 +348,29 @@ export default function SettingsPage() {
               <IconBadge icon={Bell} className="bg-red-500" />
               <div className="flex-1">
                 <p className="text-[15px] font-medium">Budget & Recurring Alerts</p>
+                <p className="text-xs text-muted-foreground">Not supported in this browser</p>
+              </div>
+            </div>
+          )}
+
+          {isSpeechSupported() ? (
+            <div className={ROW_CLASS}>
+              <IconBadge icon={Volume2} className="bg-teal-500" />
+              <div className="flex-1">
+                <p className="text-[15px] font-medium">Voice Feedback</p>
+                <p className="text-xs text-muted-foreground">Speaks toasts, confirmations, and your balance aloud</p>
+              </div>
+              <Switch
+                checked={!!settings?.voiceFeedbackEnabled}
+                onChange={handleVoiceFeedbackToggle}
+                label="Toggle voice feedback"
+              />
+            </div>
+          ) : (
+            <div className="flex items-center gap-3 p-4">
+              <IconBadge icon={Volume2} className="bg-teal-500" />
+              <div className="flex-1">
+                <p className="text-[15px] font-medium">Voice Feedback</p>
                 <p className="text-xs text-muted-foreground">Not supported in this browser</p>
               </div>
             </div>

@@ -1,4 +1,5 @@
 import { haptic } from '@/lib/haptics'
+import { speak } from '@/lib/speech'
 
 export interface ToastItem {
   id: string
@@ -32,6 +33,7 @@ export function pushToast(toast: Omit<ToastItem, 'id'>, durationMs = 3200): stri
   toasts = [...toasts, { ...toast, id }]
   emit()
   haptic(toast.variant === 'success' ? 'success' : toast.variant === 'destructive' ? 'error' : 'light')
+  void speak([toast.title, toast.description].filter(Boolean).join('. '))
   setTimeout(() => dismissToast(id), durationMs)
   return id
 }

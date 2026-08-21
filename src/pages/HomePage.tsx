@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ChevronRight, Plus, Receipt, Target } from 'lucide-react'
+import { ChevronRight, Plus, Receipt, Target, Volume2 } from 'lucide-react'
 import { Logo } from '@/components/layout/Logo'
 import { Card, CardContent } from '@/components/ui/Card'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -26,8 +26,10 @@ import {
 } from '@/hooks/useTransactions'
 import { useGoals } from '@/hooks/useGoals'
 import { useSettings } from '@/hooks/useSettings'
-import { formatCurrency } from '@/utils/money'
+import { formatCurrency, fromMinorUnits } from '@/utils/money'
 import { monthKeyToLabel, toMonthKey } from '@/utils/date'
+import { CURRENCY_INFO } from '@/lib/currency'
+import { speak } from '@/lib/speech'
 import { useEffect, useState } from 'react'
 import { useOutletContext, useSearchParams } from 'react-router-dom'
 import type { Transaction } from '@/types/models'
@@ -67,6 +69,14 @@ export default function HomePage() {
 
   const isLoading = balanceLoading || summaryLoading
 
+  function handleSpeakSummary() {
+    const currencyName = CURRENCY_INFO[settings?.currency ?? 'PHP'].name
+    const say = (minor: number) => `${fromMinorUnits(minor).toFixed(2)} ${currencyName}`
+    void speak(
+      `Your balance is ${say(balance)}. You've earned ${say(income)} and spent ${say(expense)} this month, leaving ${say(remaining)} remaining.`,
+    )
+  }
+
   return (
     <div className="flex flex-col gap-6 px-5 pb-6 pt-6 safe-top">
       <div className="flex items-center gap-3">
@@ -81,7 +91,17 @@ export default function HomePage() {
 
       <Card className="border-none bg-gradient-to-br from-violet-600 to-indigo-700 text-white shadow-sm">
         <CardContent className="p-5">
-          <p className="text-sm text-white/70">Current Balance</p>
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-white/70">Current Balance</p>
+            <button
+              type="button"
+              onClick={handleSpeakSummary}
+              aria-label="Read balance summary aloud"
+              className="flex h-8 w-8 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white active:bg-white/20"
+            >
+              <Volume2 className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
           {isLoading ? (
             <Skeleton className="mt-2 h-9 w-40 bg-white/15" />
           ) : (

@@ -117,6 +117,8 @@ export interface AppSettings {
   installPromptDismissedAt: string | null
   /** Opt-in flag for local notifications (budget alerts, recurring reminders). No backend involved. */
   notificationsEnabled: boolean
+  /** Opt-in flag for spoken feedback (toasts, transaction confirmations, balance summary) via the on-device Web Speech API. */
+  voiceFeedbackEnabled: boolean
   createdAt: string
   updatedAt: string
 }

@@ -9,13 +9,17 @@ const DEFAULTS: AppSettings = {
   securityLock: 'none',
   installPromptDismissedAt: null,
   notificationsEnabled: true,
+  voiceFeedbackEnabled: true,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 }
 
 export async function getSettings(): Promise<AppSettings> {
   const settings = await db.settings.get('settings')
-  return settings ?? DEFAULTS
+  // Merge over DEFAULTS (rather than returning the stored record as-is) so fields added after
+  // a user already has a settings row — like voiceFeedbackEnabled — fall back sanely instead
+  // of silently reading as undefined/falsy.
+  return settings ? { ...DEFAULTS, ...settings } : DEFAULTS
 }
 
 export async function updateSettings(patch: Partial<Omit<AppSettings, 'id'>>): Promise<AppSettings> {
