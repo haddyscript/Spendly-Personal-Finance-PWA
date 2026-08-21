@@ -12,13 +12,17 @@ import { TransactionFormSheet } from '@/components/transactions/TransactionFormS
 import { CreditDueCard } from '@/components/home/CreditDueCard'
 import { CreditDueSheet } from '@/components/home/CreditDueSheet'
 import { SpendingStreakCard } from '@/components/home/SpendingStreakCard'
-import { useBalance, useMonthSummary } from '@/hooks/useAnalytics'
+import { NoSpendStreakCard } from '@/components/home/NoSpendStreakCard'
+import { MoneyLeaksCard } from '@/components/home/MoneyLeaksCard'
+import { MoneyLeaksSheet } from '@/components/home/MoneyLeaksSheet'
+import { useBalance, useMonthSummary, useMoneyLeaks } from '@/hooks/useAnalytics'
 import { useBudgetsForMonth } from '@/hooks/useBudgets'
 import {
   useOutstandingCredit,
   useRecentlySettledCredit,
   useRecentTransactions,
   useSpendingStreak,
+  useNoSpendStreak,
 } from '@/hooks/useTransactions'
 import { useGoals } from '@/hooks/useGoals'
 import { useSettings } from '@/hooks/useSettings'
@@ -39,8 +43,11 @@ export default function HomePage() {
   const { totalMinor: creditDueMinor, transactions: creditDue } = useOutstandingCredit()
   const { transactions: recentlyPaidCredit } = useRecentlySettledCredit(1)
   const { current: streakDays, loggedToday: streakLoggedToday } = useSpendingStreak()
+  const { current: noSpendDays, spentToday } = useNoSpendStreak()
+  const { leaks: moneyLeaks } = useMoneyLeaks()
   const [editing, setEditing] = useState<Transaction | null>(null)
   const [creditSheetOpen, setCreditSheetOpen] = useState(false)
+  const [leaksSheetOpen, setLeaksSheetOpen] = useState(false)
   const { openAddTransaction } = useOutletContext<AppShellContext>()
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -99,6 +106,10 @@ export default function HomePage() {
       </Card>
 
       {streakDays > 0 && <SpendingStreakCard current={streakDays} loggedToday={streakLoggedToday} />}
+
+      {noSpendDays > 0 && <NoSpendStreakCard current={noSpendDays} spentToday={spentToday} />}
+
+      {moneyLeaks.length > 0 && <MoneyLeaksCard leaks={moneyLeaks} onClick={() => setLeaksSheetOpen(true)} />}
 
       {(creditDueMinor > 0 || recentlyPaidCredit.length > 0) && (
         <CreditDueCard totalMinor={creditDueMinor} count={creditDue.length} onClick={() => setCreditSheetOpen(true)} />
@@ -159,6 +170,7 @@ export default function HomePage() {
 
       <TransactionFormSheet open={editing !== null} onClose={() => setEditing(null)} transaction={editing ?? undefined} />
       <CreditDueSheet open={creditSheetOpen} onClose={() => setCreditSheetOpen(false)} />
+      <MoneyLeaksSheet open={leaksSheetOpen} onClose={() => setLeaksSheetOpen(false)} leaks={moneyLeaks} />
     </div>
   )
 }

@@ -1,12 +1,13 @@
 import type { TransactionType } from '@/types/models'
 import { useTransactions } from '@/hooks/useTransactions'
-import { toMonthKey, lastNMonthKeys, monthKeyToDate } from '@/utils/date'
+import { addDaysToDateKey, toDateKey, toMonthKey, lastNMonthKeys, monthKeyToDate } from '@/utils/date'
 import {
   calculateBalance,
   calculateCategoryTotals,
   calculateExpenseTotal,
   calculateIncomeTotal,
   calculateMonthlyTotals,
+  calculateMoneyLeaks,
   calculateSpendingTrend,
   calculateTopCategories,
   filterByMonth,
@@ -52,4 +53,12 @@ export function useTopCategories(month: string = toMonthKey(), type: Transaction
   const { transactions, isLoading } = useTransactions()
   const monthTx = filterByMonth(transactions, month).filter((t) => t.type === type)
   return { topCategories: calculateTopCategories(monthTx, limit), isLoading }
+}
+
+/** Recurring small purchases detected within the last `lookbackDays`, ranked by total spend. */
+export function useMoneyLeaks(lookbackDays = 90, minOccurrences = 3) {
+  const { transactions, isLoading } = useTransactions()
+  const cutoff = addDaysToDateKey(toDateKey(), -lookbackDays)
+  const recentTx = transactions.filter((t) => t.date >= cutoff)
+  return { leaks: calculateMoneyLeaks(recentTx, minOccurrences), isLoading }
 }

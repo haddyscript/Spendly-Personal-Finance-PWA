@@ -9,6 +9,7 @@ import { useTheme } from '@/hooks/useTheme'
 import { processDueRecurring } from '@/services/recurringService'
 import { isNotificationSupported, notify, requestNotificationPermission } from '@/services/notificationService'
 import { checkLogReminder } from '@/services/reminderService'
+import { checkNoSpendMilestone } from '@/services/noSpendService'
 
 const pageImports = {
   home: () => import('@/pages/HomePage'),
@@ -117,6 +118,12 @@ export default function App() {
     // since there's no reliable way to wake it up once the app is fully closed.
     const interval = setInterval(checkLogReminder, 30 * 60 * 1000)
     return () => clearInterval(interval)
+  }, [])
+
+  // No-spend streak only changes at a day boundary or when an expense breaks it — mid-session
+  // polling isn't needed, just a fresh check whenever the app is opened.
+  useEffect(() => {
+    checkNoSpendMilestone()
   }, [])
 
   // Notifications are on by default, so prompt for OS permission once onboarding is done

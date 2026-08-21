@@ -93,6 +93,54 @@ export function calculateTopCategories(transactions: Transaction[], limit = 5): 
     .slice(0, limit)
 }
 
+export interface MoneyLeak {
+  key: string
+  description: string
+  categoryId: string
+  count: number
+  totalMinor: number
+  avgMinor: number
+  lastDate: string
+}
+
+const MONEY_LEAK_MIN_OCCURRENCES = 3
+
+/**
+ * Detects small repeat purchases (coffee runs, delivery fees, impulse buys) by grouping
+ * expenses with matching descriptions that recur at least `minOccurrences` times. Transactions
+ * generated from a formal recurring rule are excluded — those are already surfaced elsewhere,
+ * so flagging them again here would just be noise.
+ */
+export function calculateMoneyLeaks(transactions: Transaction[], minOccurrences = MONEY_LEAK_MIN_OCCURRENCES): MoneyLeak[] {
+  const groups = new Map<string, { description: string; categoryId: string; total: number; count: number; lastDate: string }>()
+
+  for (const t of transactions) {
+    if (t.type !== 'expense' || t.recurringId) continue
+    const key = `${t.categoryId}:${t.description.trim().toLowerCase()}`
+    const existing = groups.get(key)
+    if (existing) {
+      existing.total += t.amountMinor
+      existing.count += 1
+      if (t.date > existing.lastDate) existing.lastDate = t.date
+    } else {
+      groups.set(key, { description: t.description.trim(), categoryId: t.categoryId, total: t.amountMinor, count: 1, lastDate: t.date })
+    }
+  }
+
+  return [...groups.entries()]
+    .filter(([, g]) => g.count >= minOccurrences)
+    .map(([key, g]) => ({
+      key,
+      description: g.description,
+      categoryId: g.categoryId,
+      count: g.count,
+      totalMinor: g.total,
+      avgMinor: Math.round(g.total / g.count),
+      lastDate: g.lastDate,
+    }))
+    .sort((a, b) => b.totalMinor - a.totalMinor)
+}
+
 export function previousMonthKey(monthKey: string): string {
   const [y, m] = monthKey.split('-').map(Number)
   const d = new Date(y, m - 2, 1)

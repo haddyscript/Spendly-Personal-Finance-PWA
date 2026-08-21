@@ -3,6 +3,7 @@ import { db } from '@/db/db'
 import { CREDIT_PAYMENT_METHODS } from '@/types/models'
 import type { PaymentMethod, TransactionType } from '@/types/models'
 import { getSpendingStreak } from '@/services/streakService'
+import { getNoSpendStreak } from '@/services/noSpendService'
 
 export function useTransactions() {
   const transactions = useLiveQuery(() => db.transactions.orderBy('date').reverse().toArray(), [])
@@ -36,6 +37,15 @@ export function useSpendingStreak() {
   return {
     current: streak?.current ?? 0,
     loggedToday: streak?.loggedToday ?? false,
+    isLoading: streak === undefined,
+  }
+}
+
+export function useNoSpendStreak() {
+  const streak = useLiveQuery(() => getNoSpendStreak(), [])
+  return {
+    current: streak?.current ?? 0,
+    spentToday: streak?.spentToday ?? false,
     isLoading: streak === undefined,
   }
 }
